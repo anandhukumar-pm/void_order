@@ -28,7 +28,93 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
 .page-title { font-size: 15px; font-weight: 600; color: #1a1a1a; }
 .topbar-right { display: flex; align-items: center; gap: 10px; }
 .icon-btn { width: 30px; height: 30px; border-radius: 50%; border: 1px solid #e0e0e0; background: #fff; display: flex; align-items: center; justify-content: center; cursor: pointer; }
-.av-top { width: 30px; height: 30px; border-radius: 50%; background: #1a2420; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600; color: #4ade80; }
+/* ── ORG SETTINGS AVATAR MENU ── */
+.av-top { width: 30px; height: 30px; border-radius: 50%; background: #1a2420; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600; color: #4ade80; cursor: pointer; position: relative; }
+.av-menu { display: none; position: fixed; background: #fff; border: 1px solid #e0e0e0; border-radius: 10px; box-shadow: 0 8px 24px rgba(0,0,0,0.14); z-index: 200; min-width: 200px; overflow: hidden; }
+.av-menu.open { display: block; }
+.av-menu-header { padding: 12px 14px; border-bottom: 1px solid #f0f0f0; }
+.av-menu-name { font-size: 13px; font-weight: 600; color: #1a1a1a; }
+.av-menu-role { font-size: 11.5px; color: #888; }
+.av-menu-item { display: flex; align-items: center; gap: 9px; padding: 10px 14px; font-size: 12.5px; color: #333; cursor: pointer; border-bottom: 1px solid #f5f5f5; }
+.av-menu-item:last-child { border-bottom: none; }
+.av-menu-item:hover { background: #f5f5f5; }
+/* ── ORG SETTINGS VIEW ── */
+#orgSettingsView { display: none; flex: 1; overflow: hidden; }
+#orgSettingsView.active { display: flex; flex-direction: column; }
+.os-layout { display: flex; flex: 1; overflow: hidden; }
+.os-sidenav { width: 220px; border-right: 1px solid #ebebeb; flex-shrink: 0; padding: 14px 0; }
+.os-nav-item { padding: 9px 16px; cursor: pointer; }
+.os-nav-item:hover { background: #f5f5f5; }
+.os-nav-item.active { background: #f0faf4; }
+.os-nav-title { font-size: 12.5px; font-weight: 500; color: #1a1a1a; margin-bottom: 2px; }
+.os-nav-item.active .os-nav-title { color: #0f6e56; }
+.os-nav-sub { font-size: 11px; color: #999; }
+.os-main { flex: 1; padding: 28px 32px; overflow-y: auto; }
+.os-section-title { font-size: 19px; font-weight: 600; color: #1a1a1a; margin-bottom: 20px; }
+.os-tabs { display: flex; border-bottom: 1.5px solid #ebebeb; margin-bottom: 24px; }
+.os-tab { font-size: 13px; padding: 8px 16px; cursor: pointer; color: #888; border-bottom: 2px solid transparent; margin-bottom: -1.5px; white-space: nowrap; }
+.os-tab:hover { color: #444; }
+.os-tab.active { color: #1a1a1a; border-bottom-color: #1a1a1a; font-weight: 500; }
+/* External accounts cards */
+.ea-hdr { display: flex; align-items: center; justify-content: flex-end; margin-bottom: 20px; }
+.ea-add-btn { background: #1d9e75; color: #fff; border: none; border-radius: 6px; padding: 7px 14px; font-size: 12.5px; font-weight: 500; cursor: pointer; font-family: inherit; display: flex; align-items: center; gap: 6px; }
+.ea-add-btn:hover { background: #0f6e56; }
+.ea-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
+.ea-card { border: 1px solid #e8e8e8; border-radius: 10px; padding: 16px 18px; cursor: default; transition: background 0.1s; }
+.ea-card:hover { background: #fafafa; }
+.ea-card-hdr { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+.ea-card-left { display: flex; align-items: center; gap: 9px; }
+.ea-icon { width: 28px; height: 28px; border-radius: 6px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.ea-icon.bank { background: #e1f5ee; }
+.ea-icon.card { background: #eeedfe; }
+.ea-icon.other { background: #f1f5f9; }
+.ea-name { font-size: 13px; font-weight: 500; color: #1a1a1a; }
+.ea-card-actions { display: flex; align-items: center; gap: 3px; }
+.ea-copy-btn { background: none; border: none; cursor: pointer; color: #bbb; padding: 3px; display: flex; align-items: center; }
+.ea-copy-btn:hover { color: #666; }
+.ea-dots { background: none; border: none; cursor: pointer; color: #aaa; font-size: 15px; padding: 2px 4px; }
+.ea-dots:hover { color: #555; }
+.ea-detail { display: flex; align-items: center; gap: 6px; margin-bottom: 6px; font-size: 11.5px; }
+.ea-detail:last-of-type { margin-bottom: 0; }
+.ea-detail-label { color: #999; }
+.ea-detail-val { color: #1a1a1a; font-family: monospace; font-size: 12px; }
+.ea-type-pill { display: inline-flex; margin-top: 10px; padding: 2px 8px; border-radius: 20px; font-size: 10.5px; font-weight: 500; }
+.ea-type-bank { background: #e1f5ee; color: #085041; }
+.ea-type-card { background: #eeedfe; color: #3c3489; }
+.ea-type-other { background: #f1f5f9; color: #475569; }
+.ea-row-menu { display: none; position: fixed; background: #fff; border: 1px solid #e0e0e0; border-radius: 8px; box-shadow: 0 4px 14px rgba(0,0,0,0.12); z-index: 60; overflow: hidden; min-width: 130px; }
+.ea-row-menu.open { display: block; }
+.ea-row-menu-item { padding: 9px 14px; font-size: 12.5px; color: #333; cursor: pointer; border-bottom: 1px solid #f5f5f5; }
+.ea-row-menu-item:last-child { border-bottom: none; }
+.ea-row-menu-item:hover { background: #f5f5f5; }
+.ea-row-menu-item.danger { color: #dc2626; }
+.ea-row-menu-item.danger:hover { background: #fef2f2; }
+/* Add external account modal */
+.ea-modal-bd { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 130; align-items: center; justify-content: center; }
+.ea-modal-bd.open { display: flex; }
+.ea-modal { background: #fff; border-radius: 12px; width: 420px; max-width: 96vw; box-shadow: 0 20px 60px rgba(0,0,0,0.18); overflow: hidden; }
+.ea-modal-hdr { padding: 16px 20px; border-bottom: 1px solid #ebebeb; display: flex; align-items: center; justify-content: space-between; }
+.ea-modal-title { font-size: 14px; font-weight: 600; color: #1a1a1a; }
+.ea-modal-tabs { display: flex; border-bottom: 1px solid #ebebeb; }
+.ea-modal-tab { font-size: 12px; padding: 8px 14px; color: #888; border-bottom: 2px solid transparent; cursor: pointer; }
+.ea-modal-tab.active { color: #1a1a1a; border-bottom-color: #1d9e75; font-weight: 500; }
+.ea-modal-body { padding: 16px 20px; }
+.ea-form { display: none; }
+.ea-form.active { display: block; }
+.ea-field { margin-bottom: 13px; }
+.ea-label { display: block; font-size: 11px; font-weight: 500; color: #666; margin-bottom: 5px; }
+.ea-label .req { color: #dc2626; }
+.ea-input { width: 100%; border: 1px solid #e0e0e0; border-radius: 6px; padding: 7px 10px; font-size: 12.5px; color: #1a1a1a; font-family: inherit; outline: none; transition: border-color 0.12s; }
+.ea-input:focus { border-color: #1d9e75; }
+.ea-input.short { width: 120px; }
+.ea-input::placeholder { color: #bbb; }
+.ea-divider { height: 1px; background: #f0f0f0; margin: 13px 0; }
+.ea-nickname-box { background: #f5faf7; border: 1px dashed #9fe1cb; border-radius: 6px; padding: 8px 10px; display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.ea-nickname-val { font-size: 13px; font-weight: 600; color: #1a1a1a; font-family: monospace; flex: 1; border: none; background: transparent; outline: none; }
+.ea-auto-badge { font-size: 9px; font-weight: 600; background: #e1f5ee; color: #085041; border: 1px solid #9fe1cb; padding: 2px 6px; border-radius: 3px; white-space: nowrap; }
+.ea-modal-footer { padding: 12px 20px; border-top: 1px solid #ebebeb; display: flex; justify-content: flex-end; gap: 8px; }
+.ea-cancel-btn { background: #fff; border: 1px solid #e0e0e0; border-radius: 7px; padding: 7px 14px; font-size: 12.5px; color: #555; cursor: pointer; font-family: inherit; }
+.ea-save-btn { background: #1d9e75; border: none; border-radius: 7px; padding: 7px 16px; font-size: 12.5px; color: #fff; font-weight: 600; cursor: pointer; font-family: inherit; }
 .guides-btn { border: 1px solid #e0e0e0; border-radius: 6px; padding: 4px 10px; font-size: 12px; color: #555; cursor: pointer; display: flex; align-items: center; gap: 5px; background: #fff; }
 .add-bill-btn { background: #fff; border: 1px solid #e0e0e0; border-radius: 6px; padding: 5px 12px; font-size: 12px; color: #333; cursor: pointer; display: flex; align-items: center; gap: 5px; font-weight: 500; }
 .email-chip { display: flex; align-items: center; gap: 5px; border: 1px solid #e0e0e0; border-radius: 6px; padding: 4px 10px; font-size: 11.5px; color: #666; }
@@ -536,7 +622,24 @@ select.form-input { cursor: pointer; }
       <div class="icon-btn"><svg width="13" height="13" fill="none" viewBox="0 0 13 13"><path d="M11 6.5A4.5 4.5 0 1 1 6.5 2" stroke="#888" stroke-width="1.2" stroke-linecap="round"/><path d="M11 2v4H7" stroke="#888" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
       <div class="icon-btn"><svg width="13" height="13" fill="none" viewBox="0 0 13 13"><ellipse cx="6.5" cy="6.5" rx="5.5" ry="3.5" stroke="#888" stroke-width="1.1"/><circle cx="6.5" cy="6.5" r="1.5" fill="#888"/></svg></div>
       <div class="add-bill-btn" id="addBillBtn"><svg width="11" height="11" fill="none" viewBox="0 0 11 11"><path d="M5.5 1v9M1 5.5h9" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>Add Bill<svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 3.5l3 3 3-3" stroke="#555" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-      <div class="av-top">AN</div>
+      <div class="av-top" id="avBtn" onclick="toggleAvMenu(event)">AN</div>
+    </div>
+  </div>
+
+  <!-- Avatar dropdown menu -->
+  <div class="av-menu" id="avMenu">
+    <div class="av-menu-header"><div class="av-menu-name">Anandhu</div><div class="av-menu-role">Admin</div></div>
+    <div class="av-menu-item" onclick="switchView('orgSettings');closeAvMenu()">
+      <svg width="14" height="14" fill="none" viewBox="0 0 14 14"><rect x="1" y="2" width="12" height="10" rx="1.5" stroke="currentColor" stroke-width="1.2"/><path d="M1 5.5h12" stroke="currentColor" stroke-width="1.2"/></svg>
+      Org Settings
+    </div>
+    <div class="av-menu-item" onclick="closeAvMenu()">
+      <svg width="14" height="14" fill="none" viewBox="0 0 14 14"><circle cx="7" cy="5" r="3" stroke="currentColor" stroke-width="1.2"/><path d="M1 13c0-3 2.7-5 6-5s6 2 6 5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+      Profile Settings
+    </div>
+    <div class="av-menu-item" onclick="closeAvMenu()">
+      <svg width="14" height="14" fill="none" viewBox="0 0 14 14"><path d="M5 2H2a1 1 0 00-1 1v9a1 1 0 001 1h10a1 1 0 001-1V3a1 1 0 00-1-1H9M5 2h4M5 2V1m4 1V1" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+      Logout
     </div>
   </div>
 
@@ -671,48 +774,117 @@ select.form-input { cursor: pointer; }
   <div id="settingsView">
     <div class="oc-layout">
       <div class="oc-sidenav">
-        <div class="oc-nav-item"><div class="oc-nav-title">Mysa Category</div><div class="oc-nav-sub">Manage Categories</div></div>
+        <div class="oc-nav-item active"><div class="oc-nav-title">Mysa Category</div><div class="oc-nav-sub">Manage Categories</div></div>
         <div class="oc-nav-item"><div class="oc-nav-title">Branch</div><div class="oc-nav-sub">Manage Branches</div></div>
         <div class="oc-nav-item"><div class="oc-nav-title">Departments</div><div class="oc-nav-sub">Manage Departments</div></div>
         <div class="oc-nav-item"><div class="oc-nav-title">Cost Center</div><div class="oc-nav-sub">Add/Remove Cost Center</div></div>
         <div class="oc-nav-item"><div class="oc-nav-title">Business Unit</div><div class="oc-nav-sub">Add/Remove Business Units</div></div>
-        <div class="oc-nav-item active"><div class="oc-nav-title">External Payment Sources</div><div class="oc-nav-sub">Manage payment sources</div></div>
       </div>
       <div class="oc-main">
-        <div class="oc-hdr">
-          <span class="oc-title">External Payment Sources</span>
-          <button class="oc-add-btn" onclick="openEpsModal()">
-            <svg width="11" height="11" fill="none" viewBox="0 0 11 11"><path d="M5.5 1v9M1 5.5h9" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
-            Add Source
-          </button>
-        </div>
-        <div class="oc-tabs">
-          <div class="oc-tab active" onclick="epsTabSwitch('active',this)">Active</div>
-          <div class="oc-tab" onclick="epsTabSwitch('inactive',this)">Inactive</div>
-        </div>
-        <div id="epsTableWrap">
-          <table class="oc-tbl" id="epsTable">
-            <thead>
-              <tr>
-                <th style="min-width:180px;">Nickname</th>
-                <th style="min-width:140px;">Type</th>
-                <th style="min-width:150px;">Details</th>
-                <th style="min-width:110px;">Added by</th>
-                <th style="min-width:95px;">Added on</th>
-                <th style="width:80px;text-align:right;">Actions</th>
-              </tr>
-            </thead>
-            <tbody id="epsTbody"></tbody>
-          </table>
-        </div>
+        <div class="oc-hdr"><span class="oc-title">Org Constructs</span></div>
+        <div style="color:#aaa;font-size:13px;padding:40px 0;text-align:center;">Select a section from the left to manage org constructs.</div>
       </div>
     </div>
   </div><!-- end settingsView -->
 
+  <!-- ── ORG SETTINGS VIEW ── -->
+  <div id="orgSettingsView">
+    <div class="os-layout">
+      <div class="os-sidenav">
+        <div class="os-nav-item"><div class="os-nav-title">Company Profile</div><div class="os-nav-sub">Org Details</div></div>
+        <div class="os-nav-item"><div class="os-nav-title">Platform Settings</div><div class="os-nav-sub">Set thresholds</div></div>
+        <div class="os-nav-item active"><div class="os-nav-title">Banking</div><div class="os-nav-sub">Manage accounts</div></div>
+      </div>
+      <div class="os-main">
+        <div class="os-section-title">Banking</div>
+        <div class="os-tabs">
+          <div class="os-tab" onclick="showToast('Connect or Add Accounts')">Connect or Add Accounts</div>
+          <div class="os-tab" onclick="showToast('Linked Accounts')">Linked Accounts</div>
+          <div class="os-tab active">External Accounts</div>
+        </div>
+        <div class="ea-hdr">
+          <button class="ea-add-btn" onclick="openEaModal()">
+            <svg width="11" height="11" fill="none" viewBox="0 0 11 11"><path d="M5.5 1v9M1 5.5h9" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+            Add Account
+          </button>
+        </div>
+        <div class="ea-grid" id="eaGrid"></div>
+      </div>
+    </div>
+  </div><!-- end orgSettingsView -->
+
 </div><!-- end .main -->
 
-<!-- Row actions menu -->
-<div class="oc-row-menu" id="epsRowMenu">
+<!-- EA row actions menu -->
+<div class="ea-row-menu" id="eaRowMenu">
+  <div class="ea-row-menu-item" onclick="eaEditRow()">Edit</div>
+  <div class="ea-row-menu-item danger" onclick="eaRemoveRow()">Remove</div>
+</div>
+
+<!-- Add / Edit external account modal -->
+<div class="ea-modal-bd" id="eaModal">
+  <div class="ea-modal">
+    <div class="ea-modal-hdr">
+      <span class="ea-modal-title" id="eaModalTitle">Add external account</span>
+      <button onclick="closeEaModal()" style="background:none;border:none;cursor:pointer;color:#aaa;font-size:18px;line-height:1;padding:0;">&#215;</button>
+    </div>
+    <div class="ea-modal-tabs">
+      <div class="ea-modal-tab active" id="eaTab_bank" onclick="switchEaTab('bank')">Bank account</div>
+      <div class="ea-modal-tab" id="eaTab_card" onclick="switchEaTab('card')">Credit / debit card</div>
+      <div class="ea-modal-tab" id="eaTab_other" onclick="switchEaTab('other')">Other</div>
+    </div>
+    <div class="ea-modal-body">
+      <div class="ea-form active" id="eaForm_bank">
+        <div class="ea-field">
+          <label class="ea-label">Last 4 digits of account number <span class="req">*</span></label>
+          <input type="text" class="ea-input short" id="eaBankDigits" maxlength="4" placeholder="e.g. 3190" oninput="updateEaBankNickname()">
+        </div>
+        <div class="ea-field">
+          <label class="ea-label">IFSC code <span class="req">*</span></label>
+          <input type="text" class="ea-input" id="eaIfsc" maxlength="11" placeholder="e.g. YESB0001234" oninput="updateEaBankNickname()" style="text-transform:uppercase;">
+        </div>
+        <div class="ea-divider"></div>
+        <div class="ea-field" style="margin-bottom:0;">
+          <label class="ea-label" style="display:flex;align-items:center;gap:6px;">Nickname <span class="ea-auto-badge">Auto-filled</span></label>
+          <div class="ea-nickname-box">
+            <input type="text" class="ea-nickname-val" id="eaBankNickname" placeholder="Fill fields above to auto-generate">
+            <svg width="13" height="13" fill="none" viewBox="0 0 13 13" style="color:#aaa;flex-shrink:0;"><path d="M9 2l2 2-6 6H3v-2l6-6z" stroke="currentColor" stroke-width="1.1" stroke-linejoin="round"/></svg>
+          </div>
+        </div>
+      </div>
+      <div class="ea-form" id="eaForm_card">
+        <div class="ea-field">
+          <label class="ea-label">Last 4 digits of card number <span class="req">*</span></label>
+          <input type="text" class="ea-input short" id="eaCardDigits" maxlength="4" placeholder="e.g. 7890" oninput="updateEaCardNickname()">
+        </div>
+        <div class="ea-field">
+          <label class="ea-label">Bank code <span class="req">*</span></label>
+          <input type="text" class="ea-input" id="eaCardCode" maxlength="10" placeholder="e.g. HDFC, ICICI, AXIS" oninput="updateEaCardNickname()" style="text-transform:uppercase;">
+        </div>
+        <div class="ea-divider"></div>
+        <div class="ea-field" style="margin-bottom:0;">
+          <label class="ea-label" style="display:flex;align-items:center;gap:6px;">Nickname <span class="ea-auto-badge">Auto-filled</span></label>
+          <div class="ea-nickname-box">
+            <input type="text" class="ea-nickname-val" id="eaCardNickname" placeholder="Fill fields above to auto-generate">
+            <svg width="13" height="13" fill="none" viewBox="0 0 13 13" style="color:#aaa;flex-shrink:0;"><path d="M9 2l2 2-6 6H3v-2l6-6z" stroke="currentColor" stroke-width="1.1" stroke-linejoin="round"/></svg>
+          </div>
+        </div>
+      </div>
+      <div class="ea-form" id="eaForm_other">
+        <div class="ea-field" style="margin-bottom:0;">
+          <label class="ea-label">Label / name <span class="req">*</span></label>
+          <input type="text" class="ea-input" id="eaOtherLabel" placeholder="e.g. Petty cash — Mumbai office">
+        </div>
+      </div>
+    </div>
+    <div class="ea-modal-footer">
+      <button class="ea-cancel-btn" onclick="closeEaModal()">Cancel</button>
+      <button class="ea-save-btn" id="eaSaveBtn" onclick="saveEaAccount()">Create account</button>
+    </div>
+  </div>
+</div>
+<!-- EPS row menu (kept for JS compatibility) -->
+<div class="oc-row-menu" id="epsRowMenu" style="display:none;">
   <div class="oc-row-menu-item" id="epsMenuEdit" onclick="epsEditRow()">Edit</div>
   <div class="oc-row-menu-item danger" id="epsMenuToggle" onclick="epsToggleActive()">Deactivate</div>
 </div>
@@ -1416,7 +1588,177 @@ function confirmMarkAsPaid() {
   }
 }
 
-/* ── EXTERNAL PAYMENT SOURCES ── */
+/* ── AVATAR MENU ── */
+function toggleAvMenu(e) {
+  e.stopPropagation();
+  var menu = document.getElementById('avMenu');
+  var btn = document.getElementById('avBtn');
+  var rect = btn.getBoundingClientRect();
+  menu.style.top = (rect.bottom + 6) + 'px';
+  menu.style.right = (window.innerWidth - rect.right) + 'px';
+  menu.classList.toggle('open');
+}
+function closeAvMenu() { document.getElementById('avMenu').classList.remove('open'); }
+
+/* ── EXTERNAL ACCOUNTS (Org Settings > Banking) ── */
+var eaData = [
+  { id: 1, nickname: 'YESB A/C xx3190', type: 'bank', details: 'YESB0001234', addedBy: 'Anandhu', addedOn: '12 May 26' },
+  { id: 2, nickname: 'HDFC xx7890', type: 'card', details: 'HDFC', addedBy: 'Priya', addedOn: '08 May 26' },
+  { id: 3, nickname: 'ICICI A/C xx5467', type: 'bank', details: 'ICIC0001234', addedBy: 'Devashray', addedOn: '02 Apr 26' },
+  { id: 4, nickname: 'Petty cash — Mumbai', type: 'other', details: '', addedBy: 'Anandhu', addedOn: '18 Mar 26' }
+];
+var eaEditingId = null;
+var eaCurrentTab = 'bank';
+var eaRowMenuTargetId = null;
+
+function renderEaGrid() {
+  var bankSvg = '<svg width="14" height="14" fill="none" viewBox="0 0 14 14"><rect x="1" y="4" width="12" height="8" rx="1.2" stroke="#085041" stroke-width="1.1"/><path d="M1 7h12" stroke="#085041" stroke-width="1.1"/><circle cx="4" cy="10" r="0.8" fill="#085041"/></svg>';
+  var cardSvg = '<svg width="14" height="14" fill="none" viewBox="0 0 14 14"><rect x="1" y="3" width="12" height="9" rx="1.2" stroke="#3c3489" stroke-width="1.1"/><path d="M1 6.5h12" stroke="#3c3489" stroke-width="1.1"/><rect x="3" y="8.5" width="3" height="1.5" rx="0.5" fill="#3c3489"/></svg>';
+  var otherSvg = '<svg width="14" height="14" fill="none" viewBox="0 0 14 14"><circle cx="7" cy="7" r="5.5" stroke="#475569" stroke-width="1.1"/><path d="M7 5v4M5 7h4" stroke="#475569" stroke-width="1.1" stroke-linecap="round"/></svg>';
+  var copySvg = '<svg width="12" height="12" fill="none" viewBox="0 0 13 13"><rect x="4" y="4" width="8" height="8" rx="1" stroke="currentColor" stroke-width="1.1"/><path d="M1 9V2a1 1 0 011-1h7" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"/></svg>';
+  var html = eaData.map(function(s) {
+    var icon = s.type === 'bank' ? bankSvg : (s.type === 'card' ? cardSvg : otherSvg);
+    var iconCls = 'ea-icon ' + s.type;
+    var pillCls = 'ea-type-pill ea-type-' + s.type;
+    var pillLabel = s.type === 'bank' ? 'Bank account' : (s.type === 'card' ? 'Credit / debit card' : 'Other');
+    var detailRow = s.type === 'bank'
+      ? '<div class="ea-detail"><span class="ea-detail-label">IFSC:</span><span class="ea-detail-val">'+s.details+'</span><button class="ea-copy-btn" onclick="showToast(\'Copied\')">'+copySvg+'</button></div>'
+      : (s.type === 'card'
+        ? '<div class="ea-detail"><span class="ea-detail-label">Bank code:</span><span class="ea-detail-val">'+s.details+'</span></div>'
+        : '');
+    return '<div class="ea-card">'
+      + '<div class="ea-card-hdr">'
+      + '<div class="ea-card-left"><div class="'+iconCls+'">'+icon+'</div><span class="ea-name">'+s.nickname+'</span></div>'
+      + '<div class="ea-card-actions">'
+      + (s.type !== 'other' ? '<button class="ea-copy-btn" onclick="showToast(\'Copied\')" title="Copy nickname">'+copySvg+'</button>' : '')
+      + '<button class="ea-dots" onclick="openEaRowMenu('+s.id+',event)">&#8942;</button>'
+      + '</div></div>'
+      + detailRow
+      + '<span class="'+pillCls+'">'+pillLabel+'</span>'
+      + '</div>';
+  }).join('');
+  document.getElementById('eaGrid').innerHTML = html || '<div style="grid-column:1/-1;text-align:center;color:#aaa;padding:40px;font-size:13px;">No external accounts added yet.</div>';
+  syncEaToInstrumentDropdowns();
+}
+
+function openEaRowMenu(id, e) {
+  e.stopPropagation();
+  eaRowMenuTargetId = id;
+  var menu = document.getElementById('eaRowMenu');
+  var rect = e.target.getBoundingClientRect();
+  menu.style.top = (rect.bottom + 4) + 'px';
+  menu.style.left = (rect.right - 130) + 'px';
+  menu.classList.add('open');
+}
+function closeEaRowMenu() { document.getElementById('eaRowMenu').classList.remove('open'); eaRowMenuTargetId = null; }
+
+function eaEditRow() {
+  var s = eaData.find(function(x){ return x.id === eaRowMenuTargetId; });
+  closeEaRowMenu();
+  if (!s) return;
+  eaEditingId = s.id;
+  document.getElementById('eaModalTitle').textContent = 'Edit external account';
+  document.getElementById('eaSaveBtn').textContent = 'Save changes';
+  switchEaTab(s.type);
+  if (s.type === 'bank') {
+    var m = s.nickname.match(/(\w+) A\/C xx(\d+)/);
+    document.getElementById('eaBankDigits').value = m ? m[2] : '';
+    document.getElementById('eaIfsc').value = s.details;
+    document.getElementById('eaBankNickname').value = s.nickname;
+  } else if (s.type === 'card') {
+    var m = s.nickname.match(/(\w+) xx(\d+)/);
+    document.getElementById('eaCardDigits').value = m ? m[2] : '';
+    document.getElementById('eaCardCode').value = s.details;
+    document.getElementById('eaCardNickname').value = s.nickname;
+  } else {
+    document.getElementById('eaOtherLabel').value = s.nickname;
+  }
+  document.getElementById('eaModal').classList.add('open');
+}
+
+function eaRemoveRow() {
+  eaData = eaData.filter(function(x){ return x.id !== eaRowMenuTargetId; });
+  closeEaRowMenu();
+  renderEaGrid();
+  showToast('Account removed');
+}
+
+function openEaModal() {
+  eaEditingId = null;
+  document.getElementById('eaModalTitle').textContent = 'Add external account';
+  document.getElementById('eaSaveBtn').textContent = 'Create account';
+  switchEaTab('bank');
+  ['eaBankDigits','eaIfsc','eaBankNickname','eaCardDigits','eaCardCode','eaCardNickname','eaOtherLabel'].forEach(function(id){ document.getElementById(id).value = ''; });
+  document.getElementById('eaModal').classList.add('open');
+}
+function closeEaModal() { document.getElementById('eaModal').classList.remove('open'); eaEditingId = null; }
+
+function switchEaTab(tab) {
+  eaCurrentTab = tab;
+  ['bank','card','other'].forEach(function(t){
+    document.getElementById('eaTab_'+t).classList.toggle('active', t===tab);
+    document.getElementById('eaForm_'+t).classList.toggle('active', t===tab);
+  });
+}
+function updateEaBankNickname() {
+  var d = document.getElementById('eaBankDigits').value.trim();
+  var ifsc = document.getElementById('eaIfsc').value.trim().toUpperCase();
+  if (d.length === 4 && ifsc.length >= 4) document.getElementById('eaBankNickname').value = ifsc.slice(0,4)+' A/C xx'+d;
+}
+function updateEaCardNickname() {
+  var d = document.getElementById('eaCardDigits').value.trim();
+  var code = document.getElementById('eaCardCode').value.trim().toUpperCase();
+  if (d.length === 4 && code.length >= 2) document.getElementById('eaCardNickname').value = code+' xx'+d;
+}
+
+function saveEaAccount() {
+  var nickname = '', type = eaCurrentTab, details = '';
+  if (type === 'bank') {
+    var d = document.getElementById('eaBankDigits').value.trim();
+    var ifsc = document.getElementById('eaIfsc').value.trim().toUpperCase();
+    if (!d || !ifsc) { showToast('Last 4 digits and IFSC code are required'); return; }
+    nickname = document.getElementById('eaBankNickname').value.trim() || (ifsc.slice(0,4)+' A/C xx'+d);
+    details = ifsc;
+  } else if (type === 'card') {
+    var d = document.getElementById('eaCardDigits').value.trim();
+    var code = document.getElementById('eaCardCode').value.trim().toUpperCase();
+    if (!d || !code) { showToast('Last 4 digits and bank code are required'); return; }
+    nickname = document.getElementById('eaCardNickname').value.trim() || (code+' xx'+d);
+    details = code;
+  } else {
+    nickname = document.getElementById('eaOtherLabel').value.trim();
+    if (!nickname) { showToast('Please enter a label'); return; }
+  }
+  if (eaEditingId) {
+    var s = eaData.find(function(x){ return x.id===eaEditingId; });
+    if (s) { s.nickname = nickname; s.details = details; }
+    showToast('Account updated: '+nickname);
+  } else {
+    var id = Date.now();
+    var today = new Date(); var mo = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    eaData.push({ id: id, nickname: nickname, type: type, details: details, addedBy: 'You', addedOn: today.getDate()+' '+mo[today.getMonth()]+' '+(today.getFullYear()+'').slice(2) });
+    acctLabels[String(id)] = nickname;
+    customInstruments.push({ id: String(id), label: nickname });
+    showToast('Account created: '+nickname);
+  }
+  closeEaModal();
+  renderEaGrid();
+}
+
+function syncEaToInstrumentDropdowns() {
+  var grp = document.getElementById('bulkAcctOtherGroup');
+  if (!grp) return;
+  var addOpt = grp.querySelector('option[value="add_instrument"]');
+  grp.querySelectorAll('option.ea-source-opt').forEach(function(o){ o.remove(); });
+  eaData.forEach(function(s){
+    var o = document.createElement('option');
+    o.value = String(s.id); o.textContent = s.nickname; o.className = 'ea-source-opt';
+    grp.insertBefore(o, addOpt);
+    acctLabels[String(s.id)] = s.nickname;
+  });
+}
+
+
 var epsData = [
   { id: 1, nickname: 'YESB A/C xx3190', type: 'bank', details: 'IFSC: YESB0001234', addedBy: 'Anandhu', addedOn: '12 May 26', active: true },
   { id: 2, nickname: 'HDFC xx7890', type: 'card', details: 'Bank code: HDFC', addedBy: 'Priya', addedOn: '08 May 26', active: true },
@@ -1429,6 +1771,8 @@ var epsCurrentTab = 'bank';
 var epsRowMenuTargetId = null;
 
 function renderEpsTable() {
+  var tbody = document.getElementById('epsTbody');
+  if (!tbody) return;
   var rows = epsData.filter(function(s){ return epsTab === 'active' ? s.active : !s.active; });
   var typePill = { bank: '<span class="eps-type-pill eps-bank">Bank account</span>', card: '<span class="eps-type-pill eps-card">Credit / debit card</span>', other: '<span class="eps-type-pill eps-other">Other</span>' };
   var html = rows.map(function(s){
@@ -1442,7 +1786,7 @@ function renderEpsTable() {
       + '<td><div class="oc-actions-cell"><div class="'+toggleCls+'" onclick="epsQuickToggle('+s.id+',event)"></div><span class="oc-dots" onclick="openEpsRowMenu('+s.id+',event)">&#8943;</span></div></td>'
       + '</tr>';
   }).join('');
-  document.getElementById('epsTbody').innerHTML = html || '<tr><td colspan="6" style="padding:24px;text-align:center;color:#aaa;">No '+epsTab+' sources.</td></tr>';
+  tbody.innerHTML = html || '<tr><td colspan="6" style="padding:24px;text-align:center;color:#aaa;">No '+epsTab+' sources.</td></tr>';
 }
 
 function epsTabSwitch(tab, el) {
@@ -1600,13 +1944,18 @@ function switchView(view) {
   billsEl.style.display = 'none'; rtpEl.style.display = 'none'; settingsEl.style.display = 'none';
   resetNav(navBills); resetNav(navPayments); resetNav(navSettings);
   paymentsSubnav.style.display = 'none'; addBillBtn.style.display = 'none';
+  var orgSettingsEl = document.getElementById('orgSettingsView');
+  orgSettingsEl.style.display = 'none';
   if (view === 'bills') {
     billsEl.style.display = ''; activeNav(navBills);
     pageTitle.textContent = 'Bills'; addBillBtn.style.display = 'flex';
   } else if (view === 'settings') {
     settingsEl.style.display = 'flex'; settingsEl.style.flexDirection = 'column'; settingsEl.style.flex = '1'; settingsEl.style.overflow = 'hidden';
     activeNav(navSettings); pageTitle.textContent = 'Org Constructs';
-    renderEpsTable();
+  } else if (view === 'orgSettings') {
+    orgSettingsEl.style.display = 'flex'; orgSettingsEl.style.flexDirection = 'column'; orgSettingsEl.style.flex = '1'; orgSettingsEl.style.overflow = 'hidden';
+    pageTitle.textContent = 'Org Settings';
+    renderEaGrid();
   } else {
     rtpEl.style.display = 'flex'; rtpEl.style.flexDirection = 'column'; rtpEl.style.flex = '1'; rtpEl.style.overflow = 'hidden';
     activeNav(navPayments); paymentsSubnav.style.display = 'block';
@@ -2092,8 +2441,9 @@ document.getElementById('bmapOverlay').addEventListener('click', function(e){ if
 document.getElementById('successModal').addEventListener('click', function(e){ if(e.target===this) closeSuccess(); });
 document.getElementById('epsModal').addEventListener('click', function(e){ if(e.target===this) closeEpsModal(); });
 document.getElementById('instOverlay').addEventListener('click', function(e){ if(e.target===this) closeInstPanel(); });
-document.addEventListener('click', function(){ closeMoreMenu(); closeAllPopovers(); closeRtpOptMenu(); closeEpsRowMenu(); });
-document.addEventListener('keydown', function(e){ if(e.key==='Escape'){ closeMapModal(); closeBmapModal(); closeSuccess(); closePanel(); closeMoreMenu(); closeAllPopovers(); closeRtpOptMenu(); closeInstPanel(); closeEpsModal(); closeEpsRowMenu(); } });
+document.getElementById('eaModal').addEventListener('click', function(e){ if(e.target===this) closeEaModal(); });
+document.addEventListener('click', function(){ closeMoreMenu(); closeAllPopovers(); closeRtpOptMenu(); closeEpsRowMenu(); closeEaRowMenu(); closeAvMenu(); });
+document.addEventListener('keydown', function(e){ if(e.key==='Escape'){ closeMapModal(); closeBmapModal(); closeSuccess(); closePanel(); closeMoreMenu(); closeAllPopovers(); closeRtpOptMenu(); closeInstPanel(); closeEpsModal(); closeEpsRowMenu(); closeEaModal(); closeEaRowMenu(); closeAvMenu(); } });
 
 renderTable();
 switchView('rtp');
