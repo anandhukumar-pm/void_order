@@ -1130,7 +1130,7 @@ function renderSpDetails(b) {
   var acctStatusHTML = isPaid ? '<span class="acct-status success">&#10003; Success</span>' : '<span class="acct-status failed">Failed</span>';
 
   // Mark-as-paid banner only for eligible non-paid bills
-  var markBanner = (canMarkPaid(b) && !isPaid) ? '<div class="mark-ready-banner"><div style="font-size:12px;color:#15803d;font-weight:500;">This bill is eligible to be marked as paid.</div><button class="banner-mark-btn" onclick="openModalFromPanel()">Mark as paid</button></div>' : '';
+  var markBanner = '';
 
   document.getElementById('spBody').innerHTML = markBanner +
     '<div class="sp-tl-card">'+tlHTML+'<div style="margin-top:12px;">'+auditHTML+toggleLabel+'</div></div>' +
