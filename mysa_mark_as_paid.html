@@ -193,7 +193,82 @@ tbody tr.active-row td.col-check { background: #f0faf4; }
 .map-modal { background: #fff; border-radius: 14px; width: 560px; max-width: 96vw; max-height: 90vh; display: flex; flex-direction: column; box-shadow: 0 20px 60px rgba(0,0,0,0.18); overflow: hidden; }
 .bulk-modal { background: #fff; border-radius: 14px; width: 600px; max-width: 96vw; max-height: 90vh; display: flex; flex-direction: column; box-shadow: 0 20px 60px rgba(0,0,0,0.18); overflow: hidden; }
 
-/* ── ADD INSTRUMENT PANEL ── */
+/* ── SETTINGS / ORG CONSTRUCTS ── */
+#settingsView { display: none; flex: 1; overflow: hidden; }
+#settingsView.active { display: flex; flex-direction: column; }
+.oc-layout { display: flex; flex: 1; overflow: hidden; }
+.oc-sidenav { width: 220px; border-right: 1px solid #ebebeb; flex-shrink: 0; padding: 14px 0; overflow-y: auto; }
+.oc-nav-item { padding: 9px 16px; cursor: pointer; transition: background 0.12s; }
+.oc-nav-item:hover { background: #f5f5f5; }
+.oc-nav-item.active { background: #f0faf4; }
+.oc-nav-title { font-size: 12.5px; font-weight: 500; color: #1a1a1a; margin-bottom: 2px; }
+.oc-nav-item.active .oc-nav-title { color: #0f6e56; }
+.oc-nav-sub { font-size: 11px; color: #999; }
+.oc-main { flex: 1; padding: 24px 28px; overflow-y: auto; }
+.oc-main::-webkit-scrollbar { width: 5px; }
+.oc-main::-webkit-scrollbar-thumb { background: #e0e0e0; border-radius: 3px; }
+.oc-hdr { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+.oc-title { font-size: 17px; font-weight: 600; color: #1a1a1a; }
+.oc-add-btn { background: #1d9e75; color: #fff; border: none; border-radius: 6px; padding: 7px 14px; font-size: 12.5px; font-weight: 500; cursor: pointer; font-family: inherit; display: flex; align-items: center; gap: 6px; }
+.oc-add-btn:hover { background: #0f6e56; }
+.oc-tabs { display: flex; border-bottom: 1px solid #ebebeb; margin-bottom: 16px; }
+.oc-tab { font-size: 12.5px; padding: 8px 14px; cursor: pointer; color: #888; border-bottom: 2px solid transparent; }
+.oc-tab:hover { color: #444; }
+.oc-tab.active { color: #1a1a1a; border-bottom-color: #1d9e75; font-weight: 500; }
+.oc-tbl { width: 100%; border-collapse: collapse; }
+.oc-tbl thead th { font-size: 10px; font-weight: 600; color: #999; letter-spacing: 0.06em; text-transform: uppercase; padding: 8px 10px; text-align: left; border-bottom: 1px solid #ebebeb; border-right: 1px solid #f0f0f0; background: #fafafa; white-space: nowrap; }
+.oc-tbl thead th:last-child { border-right: none; }
+.oc-tbl tbody td { padding: 10px 10px; font-size: 12.5px; color: #1a1a1a; border-bottom: 1px solid #f0f0f0; border-right: 1px solid #f5f5f5; vertical-align: middle; }
+.oc-tbl tbody td:last-child { border-right: none; }
+.oc-tbl tbody tr:last-child td { border-bottom: none; }
+.oc-tbl tbody tr:hover { background: #f8fffe; }
+.eps-type-pill { display: inline-flex; align-items: center; padding: 2px 8px; border-radius: 20px; font-size: 11px; font-weight: 500; }
+.eps-bank { background: #e1f5ee; color: #085041; }
+.eps-card { background: #eeedfe; color: #3c3489; }
+.eps-other { background: #f1f5f9; color: #475569; }
+.oc-toggle { width: 32px; height: 17px; border-radius: 20px; background: #1d9e75; position: relative; cursor: pointer; flex-shrink: 0; display: inline-block; }
+.oc-toggle::after { content: ''; width: 13px; height: 13px; border-radius: 50%; background: #fff; position: absolute; top: 2px; right: 2px; }
+.oc-toggle.off { background: #ddd; }
+.oc-toggle.off::after { left: 2px; right: auto; }
+.oc-actions-cell { display: flex; align-items: center; gap: 8px; justify-content: flex-end; }
+.oc-dots { color: #bbb; font-size: 15px; cursor: pointer; padding: 2px 4px; border-radius: 4px; }
+.oc-dots:hover { color: #555; background: #f0f0f0; }
+.oc-row-menu { display: none; position: fixed; background: #fff; border: 1px solid #e0e0e0; border-radius: 8px; box-shadow: 0 4px 14px rgba(0,0,0,0.12); z-index: 60; overflow: hidden; min-width: 140px; }
+.oc-row-menu.open { display: block; }
+.oc-row-menu-item { padding: 9px 14px; font-size: 12.5px; color: #333; cursor: pointer; border-bottom: 1px solid #f5f5f5; }
+.oc-row-menu-item:last-child { border-bottom: none; }
+.oc-row-menu-item:hover { background: #f5f5f5; }
+.oc-row-menu-item.danger { color: #dc2626; }
+.oc-row-menu-item.danger:hover { background: #fef2f2; }
+/* Add source modal */
+.eps-modal-bd { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 100; align-items: center; justify-content: center; }
+.eps-modal-bd.open { display: flex; }
+.eps-modal { background: #fff; border-radius: 14px; width: 440px; max-width: 96vw; box-shadow: 0 20px 60px rgba(0,0,0,0.18); overflow: hidden; display: flex; flex-direction: column; }
+.eps-modal-hdr { padding: 16px 20px 14px; border-bottom: 1px solid #ebebeb; display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; }
+.eps-modal-title { font-size: 14px; font-weight: 600; color: #1a1a1a; }
+.eps-modal-tabs { display: flex; border-bottom: 1px solid #ebebeb; flex-shrink: 0; }
+.eps-modal-tab { font-size: 12px; padding: 8px 14px; color: #888; border-bottom: 2px solid transparent; cursor: pointer; transition: color 0.12s; }
+.eps-modal-tab:hover { color: #444; }
+.eps-modal-tab.active { color: #1a1a1a; border-bottom-color: #1d9e75; font-weight: 500; }
+.eps-modal-body { padding: 16px 20px; overflow-y: auto; flex: 1; }
+.eps-form { display: none; }
+.eps-form.active { display: block; }
+.eps-field { margin-bottom: 13px; }
+.eps-label { display: block; font-size: 11px; font-weight: 500; color: #666; margin-bottom: 5px; display: flex; align-items: center; gap: 6px; }
+.eps-label .req { color: #dc2626; font-weight: 400; }
+.eps-input { width: 100%; border: 1px solid #e0e0e0; border-radius: 6px; padding: 7px 10px; font-size: 12.5px; color: #1a1a1a; font-family: inherit; outline: none; transition: border-color 0.12s; }
+.eps-input:focus { border-color: #1d9e75; box-shadow: 0 0 0 2px rgba(29,158,117,0.08); }
+.eps-input.short { width: 120px; }
+.eps-input::placeholder { color: #bbb; }
+.eps-divider { height: 1px; background: #f0f0f0; margin: 13px 0; }
+.eps-nickname-box { background: #f5faf7; border: 1px dashed #9fe1cb; border-radius: 6px; padding: 8px 10px; display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.eps-nickname-val { font-size: 13px; font-weight: 600; color: #1a1a1a; font-family: monospace; flex: 1; border: none; background: transparent; outline: none; }
+.eps-auto-badge { font-size: 9px; font-weight: 600; background: #e1f5ee; color: #085041; border: 1px solid #9fe1cb; padding: 2px 6px; border-radius: 3px; white-space: nowrap; }
+.eps-modal-footer { padding: 12px 20px; border-top: 1px solid #ebebeb; display: flex; justify-content: flex-end; gap: 8px; flex-shrink: 0; }
+.eps-cancel-btn { background: #fff; border: 1px solid #e0e0e0; border-radius: 7px; padding: 7px 14px; font-size: 12.5px; color: #555; cursor: pointer; font-family: inherit; font-weight: 500; }
+.eps-cancel-btn:hover { background: #f5f5f5; }
+.eps-save-btn { background: #1d9e75; border: none; border-radius: 7px; padding: 7px 16px; font-size: 12.5px; color: #fff; font-weight: 600; cursor: pointer; font-family: inherit; }
+.eps-save-btn:hover { background: #0f6e56; }
 .inst-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.3); z-index: 130; align-items: center; justify-content: center; }
 .inst-overlay.open { display: flex; }
 .inst-panel { background: #fff; border-radius: 12px; width: 360px; max-width: 94vw; box-shadow: 0 16px 48px rgba(0,0,0,0.22); overflow: hidden; }
@@ -447,7 +522,7 @@ select.form-input { cursor: pointer; }
     <div class="nav-item"><svg width="14" height="14" fill="none" viewBox="0 0 14 14"><path d="M2 11V8l2-2h6l2 2v3H2z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/><path d="M5 11v2h4v-2M7 6V1" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>Smart Statement</div>
     <div class="nav-item"><svg width="14" height="14" fill="none" viewBox="0 0 14 14"><rect x="1" y="1" width="12" height="12" rx="1.5" stroke="currentColor" stroke-width="1.2"/><path d="M4 7h6M4 4.5h6M4 9.5h4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>Accounting</div>
     <div class="nav-item"><svg width="14" height="14" fill="none" viewBox="0 0 14 14"><path d="M2 11V4l5-2.5L12 4v7H9V8H5v3H2z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/></svg>Reports<svg width="10" height="10" viewBox="0 0 10 10" fill="none" style="margin-left:auto;opacity:0.4;"><path d="M2.5 4l2.5 2.5L7.5 4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg></div>
-    <div class="nav-item"><svg width="14" height="14" fill="none" viewBox="0 0 14 14"><circle cx="7" cy="7" r="2" stroke="currentColor" stroke-width="1.2"/><path d="M7 1v1.5M7 11.5V13M1 7h1.5M11.5 7H13" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>Settings<svg width="10" height="10" viewBox="0 0 10 10" fill="none" style="margin-left:auto;opacity:0.4;"><path d="M2.5 4l2.5 2.5L7.5 4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg></div>
+    <div class="nav-item" id="navSettings" onclick="switchView('settings')"><svg width="14" height="14" fill="none" viewBox="0 0 14 14"><circle cx="7" cy="7" r="2" stroke="currentColor" stroke-width="1.2"/><path d="M7 1v1.5M7 11.5V13M1 7h1.5M11.5 7H13" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>Settings<svg width="10" height="10" viewBox="0 0 10 10" fill="none" style="margin-left:auto;opacity:0.4;"><path d="M2.5 4l2.5 2.5L7.5 4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg></div>
   </div>
   <div class="nav-bottom"><div class="nav-bottom-item"><svg width="12" height="12" fill="none" viewBox="0 0 12 12"><path d="M2 6h8M4 4l-2 2 2 2" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>Keep closed</div></div>
 </nav>
@@ -592,7 +667,121 @@ select.form-input { cursor: pointer; }
     </div>
   </div><!-- end rtpView -->
 
+  <!-- ── SETTINGS VIEW ── -->
+  <div id="settingsView">
+    <div class="oc-layout">
+      <div class="oc-sidenav">
+        <div class="oc-nav-item"><div class="oc-nav-title">Mysa Category</div><div class="oc-nav-sub">Manage Categories</div></div>
+        <div class="oc-nav-item"><div class="oc-nav-title">Branch</div><div class="oc-nav-sub">Manage Branches</div></div>
+        <div class="oc-nav-item"><div class="oc-nav-title">Departments</div><div class="oc-nav-sub">Manage Departments</div></div>
+        <div class="oc-nav-item"><div class="oc-nav-title">Cost Center</div><div class="oc-nav-sub">Add/Remove Cost Center</div></div>
+        <div class="oc-nav-item"><div class="oc-nav-title">Business Unit</div><div class="oc-nav-sub">Add/Remove Business Units</div></div>
+        <div class="oc-nav-item active"><div class="oc-nav-title">External Payment Sources</div><div class="oc-nav-sub">Manage payment sources</div></div>
+      </div>
+      <div class="oc-main">
+        <div class="oc-hdr">
+          <span class="oc-title">External Payment Sources</span>
+          <button class="oc-add-btn" onclick="openEpsModal()">
+            <svg width="11" height="11" fill="none" viewBox="0 0 11 11"><path d="M5.5 1v9M1 5.5h9" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+            Add Source
+          </button>
+        </div>
+        <div class="oc-tabs">
+          <div class="oc-tab active" onclick="epsTabSwitch('active',this)">Active</div>
+          <div class="oc-tab" onclick="epsTabSwitch('inactive',this)">Inactive</div>
+        </div>
+        <div id="epsTableWrap">
+          <table class="oc-tbl" id="epsTable">
+            <thead>
+              <tr>
+                <th style="min-width:180px;">Nickname</th>
+                <th style="min-width:140px;">Type</th>
+                <th style="min-width:150px;">Details</th>
+                <th style="min-width:110px;">Added by</th>
+                <th style="min-width:95px;">Added on</th>
+                <th style="width:80px;text-align:right;">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="epsTbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div><!-- end settingsView -->
+
 </div><!-- end .main -->
+
+<!-- Row actions menu -->
+<div class="oc-row-menu" id="epsRowMenu">
+  <div class="oc-row-menu-item" id="epsMenuEdit" onclick="epsEditRow()">Edit</div>
+  <div class="oc-row-menu-item danger" id="epsMenuToggle" onclick="epsToggleActive()">Deactivate</div>
+</div>
+
+<!-- Add / Edit source modal -->
+<div class="eps-modal-bd" id="epsModal">
+  <div class="eps-modal">
+    <div class="eps-modal-hdr">
+      <span class="eps-modal-title" id="epsModalTitle">Add external payment source</span>
+      <button onclick="closeEpsModal()" style="background:none;border:none;cursor:pointer;color:#aaa;font-size:18px;line-height:1;padding:0;">&#215;</button>
+    </div>
+    <div class="eps-modal-tabs">
+      <div class="eps-modal-tab active" id="epsTab_bank" onclick="switchEpsTab('bank')">Bank account</div>
+      <div class="eps-modal-tab" id="epsTab_card" onclick="switchEpsTab('card')">Credit / debit card</div>
+      <div class="eps-modal-tab" id="epsTab_other" onclick="switchEpsTab('other')">Other</div>
+    </div>
+    <div class="eps-modal-body">
+      <!-- Bank account -->
+      <div class="eps-form active" id="epsForm_bank">
+        <div class="eps-field">
+          <label class="eps-label">Last 4 digits of account number <span class="req">*</span></label>
+          <input type="text" class="eps-input short" id="epsBankDigits" maxlength="4" placeholder="e.g. 3190" oninput="updateEpsBankNickname()">
+        </div>
+        <div class="eps-field">
+          <label class="eps-label">IFSC code <span class="req">*</span></label>
+          <input type="text" class="eps-input" id="epsIfsc" maxlength="11" placeholder="e.g. YESB0001234" oninput="updateEpsBankNickname()" style="text-transform:uppercase;">
+        </div>
+        <div class="eps-divider"></div>
+        <div class="eps-field" style="margin-bottom:0;">
+          <label class="eps-label">Nickname <span class="eps-auto-badge">Auto-filled</span></label>
+          <div class="eps-nickname-box">
+            <input type="text" class="eps-nickname-val" id="epsBankNickname" placeholder="Fill fields above to auto-generate">
+            <svg width="14" height="14" fill="none" viewBox="0 0 14 14" style="color:#aaa;flex-shrink:0;"><path d="M10 2l2 2-7 7H3v-2l7-7z" stroke="currentColor" stroke-width="1.1" stroke-linejoin="round"/></svg>
+          </div>
+        </div>
+      </div>
+      <!-- Credit / debit card -->
+      <div class="eps-form" id="epsForm_card">
+        <div class="eps-field">
+          <label class="eps-label">Last 4 digits of card number <span class="req">*</span></label>
+          <input type="text" class="eps-input short" id="epsCardDigits" maxlength="4" placeholder="e.g. 7890" oninput="updateEpsCardNickname()">
+        </div>
+        <div class="eps-field">
+          <label class="eps-label">Bank code <span class="req">*</span></label>
+          <input type="text" class="eps-input" id="epsCardBankCode" maxlength="10" placeholder="e.g. HDFC, ICICI, AXIS" oninput="updateEpsCardNickname()" style="text-transform:uppercase;">
+        </div>
+        <div class="eps-divider"></div>
+        <div class="eps-field" style="margin-bottom:0;">
+          <label class="eps-label">Nickname <span class="eps-auto-badge">Auto-filled</span></label>
+          <div class="eps-nickname-box">
+            <input type="text" class="eps-nickname-val" id="epsCardNickname" placeholder="Fill fields above to auto-generate">
+            <svg width="14" height="14" fill="none" viewBox="0 0 14 14" style="color:#aaa;flex-shrink:0;"><path d="M10 2l2 2-7 7H3v-2l7-7z" stroke="currentColor" stroke-width="1.1" stroke-linejoin="round"/></svg>
+          </div>
+        </div>
+      </div>
+      <!-- Other -->
+      <div class="eps-form" id="epsForm_other">
+        <div class="eps-field" style="margin-bottom:0;">
+          <label class="eps-label">Label / name <span class="req">*</span></label>
+          <input type="text" class="eps-input" id="epsOtherLabel" placeholder="e.g. Petty cash — Mumbai office">
+        </div>
+      </div>
+    </div>
+    <div class="eps-modal-footer">
+      <button class="eps-cancel-btn" onclick="closeEpsModal()">Cancel</button>
+      <button class="eps-save-btn" id="epsSaveBtn" onclick="saveEpsSource()">Create source</button>
+    </div>
+  </div>
+</div>
 
 <!-- RTP floating bulk bar -->
 <div class="rtp-bulk-bar" id="rtpBulkBar">
@@ -1227,30 +1416,201 @@ function confirmMarkAsPaid() {
   }
 }
 
-/* ── VIEW SWITCHING ── */
+/* ── EXTERNAL PAYMENT SOURCES ── */
+var epsData = [
+  { id: 1, nickname: 'YESB A/C xx3190', type: 'bank', details: 'IFSC: YESB0001234', addedBy: 'Anandhu', addedOn: '12 May 26', active: true },
+  { id: 2, nickname: 'HDFC xx7890', type: 'card', details: 'Bank code: HDFC', addedBy: 'Priya', addedOn: '08 May 26', active: true },
+  { id: 3, nickname: 'ICICI A/C xx5467', type: 'bank', details: 'IFSC: ICIC0001234', addedBy: 'Devashray', addedOn: '02 Apr 26', active: true },
+  { id: 4, nickname: 'Petty cash — Mumbai', type: 'other', details: '—', addedBy: 'Anandhu', addedOn: '18 Mar 26', active: false }
+];
+var epsTab = 'active';
+var epsEditingId = null;
+var epsCurrentTab = 'bank';
+var epsRowMenuTargetId = null;
+
+function renderEpsTable() {
+  var rows = epsData.filter(function(s){ return epsTab === 'active' ? s.active : !s.active; });
+  var typePill = { bank: '<span class="eps-type-pill eps-bank">Bank account</span>', card: '<span class="eps-type-pill eps-card">Credit / debit card</span>', other: '<span class="eps-type-pill eps-other">Other</span>' };
+  var html = rows.map(function(s){
+    var toggleCls = s.active ? 'oc-toggle' : 'oc-toggle off';
+    return '<tr>'
+      + '<td style="font-weight:500;">'+s.nickname+'</td>'
+      + '<td>'+typePill[s.type]+'</td>'
+      + '<td style="color:#888;">'+s.details+'</td>'
+      + '<td style="color:#888;">'+s.addedBy+'</td>'
+      + '<td style="color:#888;">'+s.addedOn+'</td>'
+      + '<td><div class="oc-actions-cell"><div class="'+toggleCls+'" onclick="epsQuickToggle('+s.id+',event)"></div><span class="oc-dots" onclick="openEpsRowMenu('+s.id+',event)">&#8943;</span></div></td>'
+      + '</tr>';
+  }).join('');
+  document.getElementById('epsTbody').innerHTML = html || '<tr><td colspan="6" style="padding:24px;text-align:center;color:#aaa;">No '+epsTab+' sources.</td></tr>';
+}
+
+function epsTabSwitch(tab, el) {
+  epsTab = tab;
+  document.querySelectorAll('.oc-tab').forEach(function(t){ t.classList.remove('active'); });
+  el.classList.add('active');
+  renderEpsTable();
+}
+
+function epsQuickToggle(id, e) {
+  e.stopPropagation();
+  var s = epsData.find(function(x){ return x.id===id; });
+  if (s) { s.active = !s.active; renderEpsTable(); updateEpsInstrumentDropdowns(); }
+}
+
+function openEpsRowMenu(id, e) {
+  e.stopPropagation();
+  epsRowMenuTargetId = id;
+  var s = epsData.find(function(x){ return x.id===id; });
+  document.getElementById('epsMenuToggle').textContent = s.active ? 'Deactivate' : 'Activate';
+  document.getElementById('epsMenuToggle').className = s.active ? 'oc-row-menu-item danger' : 'oc-row-menu-item';
+  var menu = document.getElementById('epsRowMenu');
+  var rect = e.target.getBoundingClientRect();
+  menu.style.top = (rect.bottom + 4) + 'px';
+  menu.style.left = (rect.right - 140) + 'px';
+  menu.classList.add('open');
+}
+function closeEpsRowMenu() { document.getElementById('epsRowMenu').classList.remove('open'); epsRowMenuTargetId = null; }
+
+function epsEditRow() {
+  var s = epsData.find(function(x){ return x.id===epsRowMenuTargetId; });
+  closeEpsRowMenu();
+  if (!s) return;
+  epsEditingId = s.id;
+  document.getElementById('epsModalTitle').textContent = 'Edit payment source';
+  document.getElementById('epsSaveBtn').textContent = 'Save changes';
+  switchEpsTab(s.type);
+  if (s.type === 'bank') {
+    var parts = s.nickname.match(/(\w+) A\/C xx(\d+)/);
+    document.getElementById('epsBankDigits').value = parts ? parts[2] : '';
+    document.getElementById('epsIfsc').value = s.details.replace('IFSC: ','');
+    document.getElementById('epsBankNickname').value = s.nickname;
+  } else if (s.type === 'card') {
+    var parts = s.nickname.match(/(\w+) xx(\d+)/);
+    document.getElementById('epsCardDigits').value = parts ? parts[2] : '';
+    document.getElementById('epsCardBankCode').value = s.details.replace('Bank code: ','');
+    document.getElementById('epsCardNickname').value = s.nickname;
+  } else {
+    document.getElementById('epsOtherLabel').value = s.nickname;
+  }
+  document.getElementById('epsModal').classList.add('open');
+}
+
+function epsToggleActive() {
+  var s = epsData.find(function(x){ return x.id===epsRowMenuTargetId; });
+  closeEpsRowMenu();
+  if (s) { s.active = !s.active; renderEpsTable(); updateEpsInstrumentDropdowns(); }
+}
+
+function openEpsModal() {
+  epsEditingId = null;
+  document.getElementById('epsModalTitle').textContent = 'Add external payment source';
+  document.getElementById('epsSaveBtn').textContent = 'Create source';
+  switchEpsTab('bank');
+  ['epsBankDigits','epsIfsc','epsBankNickname','epsCardDigits','epsCardBankCode','epsCardNickname','epsOtherLabel'].forEach(function(id){ document.getElementById(id).value = ''; });
+  document.getElementById('epsModal').classList.add('open');
+}
+function closeEpsModal() { document.getElementById('epsModal').classList.remove('open'); epsEditingId = null; }
+
+function switchEpsTab(tab) {
+  epsCurrentTab = tab;
+  ['bank','card','other'].forEach(function(t){
+    document.getElementById('epsTab_'+t).classList.toggle('active', t===tab);
+    document.getElementById('epsForm_'+t).classList.toggle('active', t===tab);
+  });
+}
+
+function updateEpsBankNickname() {
+  var digits = document.getElementById('epsBankDigits').value.trim();
+  var ifsc = document.getElementById('epsIfsc').value.trim().toUpperCase();
+  if (digits.length === 4 && ifsc.length >= 4) document.getElementById('epsBankNickname').value = ifsc.slice(0,4) + ' A/C xx' + digits;
+}
+function updateEpsCardNickname() {
+  var digits = document.getElementById('epsCardDigits').value.trim();
+  var code = document.getElementById('epsCardBankCode').value.trim().toUpperCase();
+  if (digits.length === 4 && code.length >= 2) document.getElementById('epsCardNickname').value = code + ' xx' + digits;
+}
+
+function saveEpsSource() {
+  var nickname = '', type = epsCurrentTab, details = '—';
+  if (type === 'bank') {
+    var d = document.getElementById('epsBankDigits').value.trim();
+    var ifsc = document.getElementById('epsIfsc').value.trim().toUpperCase();
+    if (!d || !ifsc) { showToast('Last 4 digits and IFSC code are required'); return; }
+    nickname = document.getElementById('epsBankNickname').value.trim() || (ifsc.slice(0,4) + ' A/C xx' + d);
+    details = 'IFSC: ' + ifsc;
+  } else if (type === 'card') {
+    var d = document.getElementById('epsCardDigits').value.trim();
+    var code = document.getElementById('epsCardBankCode').value.trim().toUpperCase();
+    if (!d || !code) { showToast('Last 4 digits and bank code are required'); return; }
+    nickname = document.getElementById('epsCardNickname').value.trim() || (code + ' xx' + d);
+    details = 'Bank code: ' + code;
+  } else {
+    nickname = document.getElementById('epsOtherLabel').value.trim();
+    if (!nickname) { showToast('Please enter a label'); return; }
+  }
+  if (epsEditingId) {
+    var s = epsData.find(function(x){ return x.id===epsEditingId; });
+    if (s) { s.nickname = nickname; s.details = details; }
+    showToast('Source updated: ' + nickname);
+  } else {
+    var newId = Date.now();
+    var today = new Date(); var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    var dateStr = today.getDate()+' '+months[today.getMonth()]+' '+(today.getFullYear()+'').slice(2);
+    epsData.push({ id: newId, nickname: nickname, type: type, details: details, addedBy: 'You', addedOn: dateStr, active: true });
+    // Also add to mark-as-paid instrument dropdowns
+    acctLabels[String(newId)] = nickname;
+    customInstruments.push({ id: String(newId), label: nickname });
+    updateEpsInstrumentDropdowns();
+    showToast('Source created: ' + nickname);
+  }
+  closeEpsModal();
+  renderEpsTable();
+}
+
+function updateEpsInstrumentDropdowns() {
+  // Rebuild bulk acct dropdown other group from active eps sources
+  var grp = document.getElementById('bulkAcctOtherGroup');
+  if (!grp) return;
+  var addOpt = grp.querySelector('option[value="add_instrument"]');
+  var existing = grp.querySelectorAll('option.eps-source-opt');
+  existing.forEach(function(o){ o.remove(); });
+  var active = epsData.filter(function(s){ return s.active; });
+  active.forEach(function(s){
+    var o = document.createElement('option');
+    o.value = String(s.id); o.textContent = s.nickname; o.className = 'eps-source-opt';
+    grp.insertBefore(o, addOpt);
+    acctLabels[String(s.id)] = s.nickname;
+  });
+}
 var currentView = 'bills';
 function switchView(view) {
   currentView = view;
   var billsEl = document.getElementById('billsView');
   var rtpEl = document.getElementById('rtpView');
+  var settingsEl = document.getElementById('settingsView');
   var navBills = document.getElementById('navBills');
   var navPayments = document.getElementById('navPayments');
+  var navSettings = document.getElementById('navSettings');
   var paymentsSubnav = document.getElementById('paymentsSubnav');
   var pageTitle = document.getElementById('pageTitle');
   var addBillBtn = document.getElementById('addBillBtn');
+  var resetNav = function(el){ el.style.borderLeftColor = 'transparent'; el.style.background = ''; el.style.color = '#7a9a88'; };
+  var activeNav = function(el){ el.style.borderLeftColor = '#4ade80'; el.style.background = '#1e2e28'; el.style.color = '#e8f5ee'; };
+  billsEl.style.display = 'none'; rtpEl.style.display = 'none'; settingsEl.style.display = 'none';
+  resetNav(navBills); resetNav(navPayments); resetNav(navSettings);
+  paymentsSubnav.style.display = 'none'; addBillBtn.style.display = 'none';
   if (view === 'bills') {
-    billsEl.style.display = ''; rtpEl.style.display = 'none';
-    navBills.style.borderLeftColor = '#4ade80'; navBills.style.background = '#1e2e28'; navBills.style.color = '#e8f5ee';
-    navPayments.style.borderLeftColor = 'transparent'; navPayments.style.background = ''; navPayments.style.color = '#7a9a88';
-    paymentsSubnav.style.display = 'none';
+    billsEl.style.display = ''; activeNav(navBills);
     pageTitle.textContent = 'Bills'; addBillBtn.style.display = 'flex';
+  } else if (view === 'settings') {
+    settingsEl.style.display = 'flex'; settingsEl.style.flexDirection = 'column'; settingsEl.style.flex = '1'; settingsEl.style.overflow = 'hidden';
+    activeNav(navSettings); pageTitle.textContent = 'Org Constructs';
+    renderEpsTable();
   } else {
-    billsEl.style.display = 'none'; rtpEl.style.display = 'flex'; rtpEl.style.flexDirection = 'column'; rtpEl.style.flex = '1'; rtpEl.style.overflow = 'hidden';
-    navBills.style.borderLeftColor = 'transparent'; navBills.style.background = ''; navBills.style.color = '#7a9a88';
-    navPayments.style.borderLeftColor = '#4ade80'; navPayments.style.background = '#1e2e28'; navPayments.style.color = '#e8f5ee';
-    paymentsSubnav.style.display = 'block';
-    pageTitle.textContent = 'Payments'; addBillBtn.style.display = 'none';
-    renderRtpTable(); updateRtpSummary();
+    rtpEl.style.display = 'flex'; rtpEl.style.flexDirection = 'column'; rtpEl.style.flex = '1'; rtpEl.style.overflow = 'hidden';
+    activeNav(navPayments); paymentsSubnav.style.display = 'block';
+    pageTitle.textContent = 'Payments'; renderRtpTable(); updateRtpSummary();
   }
   closePanel();
 }
@@ -1730,9 +2090,10 @@ function showToast(msg) {
 document.getElementById('mapModal').addEventListener('click', function(e){ if(e.target===this) closeMapModal(); });
 document.getElementById('bmapOverlay').addEventListener('click', function(e){ if(e.target===this) closeBmapModal(); });
 document.getElementById('successModal').addEventListener('click', function(e){ if(e.target===this) closeSuccess(); });
-document.addEventListener('click', function(){ closeMoreMenu(); closeAllPopovers(); closeRtpOptMenu(); });
+document.getElementById('epsModal').addEventListener('click', function(e){ if(e.target===this) closeEpsModal(); });
 document.getElementById('instOverlay').addEventListener('click', function(e){ if(e.target===this) closeInstPanel(); });
-document.addEventListener('keydown', function(e){ if(e.key==='Escape'){ closeMapModal(); closeBmapModal(); closeSuccess(); closePanel(); closeMoreMenu(); closeAllPopovers(); closeRtpOptMenu(); closeInstPanel(); } });
+document.addEventListener('click', function(){ closeMoreMenu(); closeAllPopovers(); closeRtpOptMenu(); closeEpsRowMenu(); });
+document.addEventListener('keydown', function(e){ if(e.key==='Escape'){ closeMapModal(); closeBmapModal(); closeSuccess(); closePanel(); closeMoreMenu(); closeAllPopovers(); closeRtpOptMenu(); closeInstPanel(); closeEpsModal(); closeEpsRowMenu(); } });
 
 renderTable();
 switchView('rtp');
