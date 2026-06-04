@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mysa — Mark as Paid Prototype</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background: #0f1a14;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+}
+.container {
+  max-width: 560px;
+  width: 100%;
+  text-align: center;
+}
+.logo {
+  font-size: 28px;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: -0.5px;
+  margin-bottom: 40px;
+}
+.logo span { color: #4ade80; }
+.card {
+  background: #1a2420;
+  border: 1px solid #2a3830;
+  border-radius: 16px;
+  padding: 36px 40px;
+}
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(74,222,128,0.1);
+  border: 1px solid rgba(74,222,128,0.2);
+  border-radius: 20px;
+  padding: 4px 12px;
+  font-size: 11.5px;
+  font-weight: 500;
+  color: #4ade80;
+  margin-bottom: 20px;
+}
+.badge-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #4ade80;
+}
+h1 {
+  font-size: 22px;
+  font-weight: 600;
+  color: #fff;
+  margin-bottom: 10px;
+  line-height: 1.3;
+}
+.subtitle {
+  font-size: 13.5px;
+  color: #7a9a88;
+  line-height: 1.6;
+  margin-bottom: 32px;
+}
+.divider {
+  height: 1px;
+  background: #2a3830;
+  margin: 28px 0;
+}
+.features {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 32px;
+  text-align: left;
+}
+.feature {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+.feature-icon {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: rgba(74,222,128,0.12);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+.feature-text {
+  font-size: 12.5px;
+  color: #cde8d8;
+  line-height: 1.5;
+}
+.feature-text strong {
+  color: #fff;
+  font-weight: 500;
+}
+.launch-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  background: #4ade80;
+  color: #1a2420;
+  border: none;
+  border-radius: 10px;
+  padding: 14px 24px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background 0.15s, transform 0.1s;
+}
+.launch-btn:hover {
+  background: #22c55e;
+  transform: translateY(-1px);
+}
+.launch-btn:active { transform: translateY(0); }
+.meta {
+  margin-top: 20px;
+  font-size: 11.5px;
+  color: #4a6a58;
+}
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="logo">my<span>sa</span></div>
+
+  <div class="card">
+    <div class="badge">
+      <div class="badge-dot"></div>
+      Feature Prototype
+    </div>
+
+    <h1>Mark as Paid — Void Order</h1>
+    <p class="subtitle">An interactive prototype of the structured external payment recording flow for Mysa's AP platform.</p>
+
+    <div class="features">
+      <div class="feature">
+        <div class="feature-icon">
+          <svg width="10" height="10" fill="none" viewBox="0 0 10 10"><path d="M1.5 5l2.5 2.5 4.5-4" stroke="#4ade80" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div class="feature-text"><strong>RTP Screen</strong> — Ready to Pay view with multi-select, bulk action bar and filtering</div>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">
+          <svg width="10" height="10" fill="none" viewBox="0 0 10 10"><path d="M1.5 5l2.5 2.5 4.5-4" stroke="#4ade80" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div class="feature-text"><strong>Single Bill Flow</strong> — Side panel with More Actions → Mark as Paid</div>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">
+          <svg width="10" height="10" fill="none" viewBox="0 0 10 10"><path d="M1.5 5l2.5 2.5 4.5-4" stroke="#4ade80" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div class="feature-text"><strong>Bulk Mark as Paid</strong> — Per-bill payment details, bulk set tools, Hold GST, optional columns</div>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">
+          <svg width="10" height="10" fill="none" viewBox="0 0 10 10"><path d="M1.5 5l2.5 2.5 4.5-4" stroke="#4ade80" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div class="feature-text"><strong>Source Instruments</strong> — Add custom bank accounts and cards with auto-generated nicknames</div>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">
+          <svg width="10" height="10" fill="none" viewBox="0 0 10 10"><path d="M1.5 5l2.5 2.5 4.5-4" stroke="#4ade80" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div class="feature-text"><strong>Partial Payments</strong> — Bills remain in RTP with updated due amount when partially paid</div>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">
+          <svg width="10" height="10" fill="none" viewBox="0 0 10 10"><path d="M1.5 5l2.5 2.5 4.5-4" stroke="#4ade80" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div class="feature-text"><strong>Bill Timeline</strong> — Full audit trail with payment ID, UTR, account, and accounting entry status</div>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <a href="mysa_mark_as_paid.html" class="launch-btn">
+      <svg width="15" height="15" fill="none" viewBox="0 0 15 15"><path d="M7.5 1.5l6 6-6 6M1.5 7.5h12" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      Launch Prototype
+    </a>
+
+    <p class="meta">Open in desktop browser for best experience &nbsp;·&nbsp; Mysa AP Platform</p>
+  </div>
+</div>
+</body>
+</html>

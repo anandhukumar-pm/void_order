@@ -1,0 +1,1742 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mysa — Bills (Mark as Paid)</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f0f2f0; font-size: 13px; height: 100vh; overflow: hidden; }
+.app { display: flex; height: 100vh; }
+.nav { width: 210px; background: #1a2420; flex-shrink: 0; display: flex; flex-direction: column; overflow-y: auto; z-index: 10; }
+.nav-logo { padding: 18px 16px 14px; border-bottom: 1px solid #2a3830; }
+.nav-logo-text { font-size: 18px; font-weight: 700; color: #fff; letter-spacing: -0.5px; }
+.nav-logo-text span { color: #4ade80; }
+.nav-item { display: flex; align-items: center; gap: 9px; padding: 8px 16px; cursor: pointer; color: #7a9a88; font-size: 12.5px; border-left: 2px solid transparent; transition: background 0.15s, color 0.15s; user-select: none; }
+.nav-item:hover { background: #243028; color: #cde8d8; }
+.nav-item.active { color: #e8f5ee; background: #1e2e28; border-left-color: #4ade80; }
+.nav-divider { border: none; border-top: 1px solid #232e28; margin: 4px 0; }
+.nav-bottom { margin-top: auto; padding: 12px 16px; border-top: 1px solid #232e28; }
+.nav-bottom-item { display: flex; align-items: center; gap: 8px; color: #5a7a68; font-size: 12px; padding: 5px 0; cursor: pointer; }
+.main { flex: 1; display: flex; flex-direction: column; background: #fff; overflow: hidden; min-width: 0; }
+.content { flex: 1; overflow: hidden; min-width: 0; display: flex; flex-direction: column; }
+.content::-webkit-scrollbar { width: 5px; }
+.content::-webkit-scrollbar-thumb { background: #e0e0e0; border-radius: 3px; }
+.announce-bar { background: #fffbeb; border-bottom: 1px solid #fde68a; padding: 7px 20px; font-size: 11.5px; color: #92400e; display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
+.topbar { background: #fff; border-bottom: 1px solid #e8e8e8; padding: 10px 20px; display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; }
+.topbar-left { display: flex; align-items: center; gap: 10px; }
+.page-title { font-size: 15px; font-weight: 600; color: #1a1a1a; }
+.topbar-right { display: flex; align-items: center; gap: 10px; }
+.icon-btn { width: 30px; height: 30px; border-radius: 50%; border: 1px solid #e0e0e0; background: #fff; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+.av-top { width: 30px; height: 30px; border-radius: 50%; background: #1a2420; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600; color: #4ade80; }
+.guides-btn { border: 1px solid #e0e0e0; border-radius: 6px; padding: 4px 10px; font-size: 12px; color: #555; cursor: pointer; display: flex; align-items: center; gap: 5px; background: #fff; }
+.add-bill-btn { background: #fff; border: 1px solid #e0e0e0; border-radius: 6px; padding: 5px 12px; font-size: 12px; color: #333; cursor: pointer; display: flex; align-items: center; gap: 5px; font-weight: 500; }
+.email-chip { display: flex; align-items: center; gap: 5px; border: 1px solid #e0e0e0; border-radius: 6px; padding: 4px 10px; font-size: 11.5px; color: #666; }
+.bill-tabs-row { display: flex; align-items: center; padding: 0 20px; border-bottom: 1px solid #e8e8e8; flex-shrink: 0; }
+.bill-tab { font-size: 12.5px; color: #888; padding: 10px 14px; cursor: pointer; border-bottom: 2px solid transparent; white-space: nowrap; display: flex; align-items: center; gap: 5px; }
+.bill-tab:hover { color: #444; }
+.bill-tab.active { color: #1a1a1a; border-bottom-color: #1a1a1a; font-weight: 500; }
+.tab-badge { background: #e8e8e8; color: #666; font-size: 10px; font-weight: 600; padding: 1px 6px; border-radius: 10px; }
+.filter-row { display: flex; align-items: center; justify-content: space-between; padding: 8px 20px; border-bottom: 1px solid #f0f0f0; flex-shrink: 0; }
+.filter-left { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.filter-label { font-size: 12px; color: #888; }
+.chip { background: #fff; border: 1px solid #e0e0e0; border-radius: 6px; padding: 4px 10px; font-size: 11.5px; color: #555; cursor: pointer; display: flex; align-items: center; gap: 5px; transition: all 0.15s; white-space: nowrap; }
+.chip:hover { background: #f5f5f5; }
+.chip.active { background: #f0faf4; border-color: #86efac; color: #15803d; font-weight: 500; }
+.sort-label { font-size: 12px; color: #888; cursor: pointer; white-space: nowrap; display: flex; align-items: center; gap: 4px; }
+.summary-row { display: flex; gap: 0; padding: 10px 20px; border-bottom: 1px solid #f0f0f0; flex-shrink: 0; align-items: center; }
+.summary-item { display: flex; flex-direction: column; gap: 2px; padding-right: 24px; margin-right: 24px; border-right: 1px solid #e8e8e8; }
+.summary-item:last-child { border-right: none; }
+.sum-label { font-size: 11px; color: #aaa; border-left: 2px solid #d0d0d0; padding-left: 8px; }
+.sum-label.blue { border-left-color: #2563eb; }
+.sum-label.amber { border-left-color: #f59e0b; }
+.sum-label.green { border-left-color: #16a34a; }
+.sum-value { font-size: 18px; font-weight: 600; color: #1a1a1a; padding-left: 10px; }
+.table-wrap { flex: 1; overflow: auto; }
+.table-wrap::-webkit-scrollbar { width: 5px; height: 5px; }
+.table-wrap::-webkit-scrollbar-thumb { background: #e0e0e0; border-radius: 3px; }
+.table-wrap table { width: max-content; min-width: 100%; border-collapse: collapse; }
+thead th { padding: 8px 12px; text-align: left; font-size: 10px; font-weight: 600; color: #999; letter-spacing: 0.06em; text-transform: uppercase; border-bottom: 1px solid #ebebeb; border-right: 1px solid #f0f0f0; background: #fafafa; white-space: nowrap; position: sticky; top: 0; z-index: 2; }
+thead th:last-child { border-right: none; }
+th.col-check { position: sticky; left: 0; z-index: 3; background: #fafafa; width: 36px; padding: 8px 10px; border-right: 1px solid #f0f0f0; }
+tbody tr { border-bottom: 1px solid #f0f0f0; transition: background 0.1s; cursor: pointer; }
+tbody tr:hover { background: #f8fffe; }
+tbody tr.active-row { background: #f0faf4; }
+td { padding: 9px 12px; vertical-align: middle; white-space: nowrap; border-right: 1px solid #f5f5f5; font-size: 12.5px; }
+td:last-child { border-right: none; }
+td.col-check { position: sticky; left: 0; background: #fff; z-index: 1; padding: 9px 10px; width: 36px; border-right: 1px solid #f0f0f0; }
+tbody tr:hover td.col-check { background: #f8fffe; }
+tbody tr.active-row td.col-check { background: #f0faf4; }
+.vendor-cell { display: flex; align-items: center; gap: 8px; }
+.av-sm { width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 700; flex-shrink: 0; }
+.vendor-name { font-size: 12.5px; color: #1a1a1a; font-weight: 500; max-width: 160px; overflow: hidden; text-overflow: ellipsis; }
+.msme-tag { background: #eff6ff; color: #1d4ed8; font-size: 9px; font-weight: 600; padding: 1px 5px; border-radius: 3px; border: 1px solid #bfdbfe; flex-shrink: 0; }
+.warn-icon { color: #f59e0b; font-size: 11px; margin-left: 3px; }
+.doc-ic { width: 22px; height: 22px; border-radius: 3px; background: #e8f5e9; display: flex; align-items: center; justify-content: center; }
+.pill { display: inline-flex; align-items: center; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 500; white-space: nowrap; }
+.pill-inpayment { background: #fffbeb; color: #b45309; border: 1px solid #fde68a; }
+.pill-readytopay { background: #eff6ff; color: #1d4ed8; border: 1px solid #bfdbfe; }
+.pill-infinreview { background: #f3f4f6; color: #6b7280; border: 1px solid #e5e7eb; }
+.pill-inapproval { background: #eff6ff; color: #2563eb; border: 1px solid #bfdbfe; }
+.pill-partiallypaid { background: #faf5ff; color: #7c3aed; border: 1px solid #ddd6fe; }
+.pill-paid { background: #f0fdf4; color: #15803d; border: 1px solid #86efac; }
+.bulk-bar { display: none; position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); background: #1a2420; border-radius: 10px; box-shadow: 0 4px 24px rgba(0,0,0,0.28); align-items: stretch; gap: 0; z-index: 30; min-height: 56px; white-space: nowrap; overflow: hidden; }
+.bulk-bar.show { display: flex; animation: floatUp 0.2s ease; }
+@keyframes floatUp { from { opacity:0; transform:translateX(-50%) translateY(10px); } to { opacity:1; transform:translateX(-50%) translateY(0); } }
+.bulk-close-btn { width: 40px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #7a9a88; font-size: 16px; flex-shrink: 0; border-right: 1px solid #2a3830; }
+.bulk-close-btn:hover { color: #cde8d8; }
+.bulk-stat { display: flex; flex-direction: column; justify-content: center; padding: 0 20px; border-right: 1px solid #2a3830; flex-shrink: 0; }
+.bulk-stat-label { font-size: 10px; color: #7a9a88; letter-spacing: 0.04em; text-transform: uppercase; margin-bottom: 2px; }
+.bulk-stat-val { font-size: 14px; font-weight: 600; color: #fff; }
+.bulk-stat-val.blue { color: #60a5fa; border-left: 2px solid #2563eb; padding-left: 6px; }
+.bulk-stat-val.amber { color: #fbbf24; border-left: 2px solid #f59e0b; padding-left: 6px; }
+.bulk-actions { display: flex; align-items: center; gap: 8px; padding: 0 14px; }
+.bulk-btn { background: #fff; border: none; border-radius: 6px; padding: 6px 14px; font-size: 12px; color: #1a2420; cursor: pointer; font-weight: 600; display: flex; align-items: center; gap: 5px; font-family: inherit; }
+.bulk-btn:hover { background: #e8fce8; }
+.bulk-dl-btn { width: 32px; height: 32px; border-radius: 6px; background: rgba(255,255,255,0.1); border: none; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #cde8d8; flex-shrink: 0; }
+.bulk-dl-btn:hover { background: rgba(255,255,255,0.18); }
+.side-overlay { display: none; position: fixed; inset: 0; z-index: 40; }
+.side-overlay.open { display: block; }
+.side-panel { position: fixed; top: 0; right: 0; width: 520px; height: 100vh; background: #fff; border-left: 1px solid #e8e8e8; z-index: 50; display: flex; flex-direction: column; transform: translateX(100%); transition: transform 0.25s cubic-bezier(0.4,0,0.2,1); box-shadow: -4px 0 24px rgba(0,0,0,0.08); }
+.side-panel.open { transform: translateX(0); }
+.sp-hdr { padding: 14px 18px 10px; border-bottom: 1px solid #f0f0f0; flex-shrink: 0; }
+.sp-hdr-top { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 6px; }
+.sp-av { width: 34px; height: 34px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; flex-shrink: 0; }
+.sp-name { font-size: 15px; font-weight: 700; color: #1a1a1a; }
+.sp-id-row { display: flex; align-items: center; gap: 6px; margin-top: 3px; margin-left: 44px; }
+.sp-id { font-size: 12px; color: #888; }
+.sp-hdr-acts { display: flex; align-items: center; gap: 6px; }
+.sp-btn { width: 28px; height: 28px; border-radius: 6px; border: 1px solid #e8e8e8; background: #fff; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #888; }
+.sp-close { width: 28px; height: 28px; border-radius: 6px; border: 1px solid #e8e8e8; background: #fff; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #999; font-size: 16px; line-height: 1; }
+.sp-close:hover { background: #fef2f2; color: #dc2626; border-color: #fca5a5; }
+.sp-flag-row { display: flex; gap: 5px; flex-wrap: wrap; }
+.sp-flag { font-size: 10px; font-weight: 500; padding: 2px 8px; border-radius: 4px; }
+.sp-flag.orange { background: #fff7ed; color: #c2410c; border: 1px solid #fed7aa; }
+.sp-tabs-row { display: flex; padding: 0 18px; border-bottom: 1px solid #e8e8e8; flex-shrink: 0; }
+.sp-tab { font-size: 12px; color: #888; padding: 9px 10px; cursor: pointer; border-bottom: 2px solid transparent; display: flex; align-items: center; gap: 4px; }
+.sp-tab:hover { color: #444; }
+.sp-tab.active { color: #1a1a1a; border-bottom-color: #1a1a1a; font-weight: 500; }
+.sp-body { flex: 1; overflow-y: auto; padding: 14px 18px 100px; }
+.sp-body::-webkit-scrollbar { width: 4px; }
+.sp-body::-webkit-scrollbar-thumb { background: #e8e8e8; border-radius: 2px; }
+.hl-tl { display:flex; align-items:flex-start; width:100%; margin-bottom:4px; }
+.hl-step { display:flex; flex-direction:column; align-items:center; flex:1; }
+.hl-dot { width:18px; height:18px; border-radius:50%; border:1.5px solid #e0e0e0; background:#fff; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+.hl-dot.done { background:#16a34a; border-color:#16a34a; }
+.hl-dot.curr { background:#fff; border-color:#2563eb; box-shadow:0 0 0 2px #dbeafe; }
+.hl-conn { flex:1; height:1.5px; margin-top:8px; }
+.hl-conn.done { background:#16a34a; }
+.hl-conn.pend { background:#e0e0e0; }
+.hl-lbl { font-size:10px; color:#999; margin-top:4px; text-align:center; max-width:56px; }
+.hl-lbl.done { color:#16a34a; font-weight:500; }
+.hl-lbl.curr { color:#2563eb; font-weight:500; }
+.sp-tl-card { border: 1px solid #e8e8e8; border-radius: 10px; padding: 14px; margin-bottom: 14px; }
+.sp-tl-event { display: flex; align-items: flex-start; gap: 10px; padding: 8px 0; border-bottom: 1px solid #f5f5f5; }
+.sp-tl-event:last-child { border-bottom: none; padding-bottom: 0; }
+.tl-dot-sm { width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; }
+.tl-ev-action { font-size: 12.5px; font-weight: 500; color: #1a1a1a; margin-bottom: 2px; }
+.tl-ev-meta { font-size: 11px; color: #888; }
+.tl-ev-paid-detail { font-size: 11px; color: #555; margin-top: 6px; background: #f0faf4; border-radius: 6px; padding: 7px 10px; border: 1px solid #bbf7d0; }
+.tl-paid-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 14px; }
+.tl-pk { font-size: 10px; color: #6b7280; }
+.tl-pv { font-size: 11.5px; font-weight: 500; color: #1a1a1a; }
+.sp-sec-title { font-size: 12.5px; font-weight: 600; color: #1a1a1a; margin: 16px 0 10px; }
+.sp-summary-card { border: 1px solid #e8e8e8; border-radius: 10px; padding: 14px 16px; }
+.sp-status-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; padding-bottom: 10px; border-bottom: 1px solid #f0f0f0; }
+.sp-amounts { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 12px; padding-bottom: 12px; border-bottom: 1px solid #f0f0f0; }
+.sp-amt-label { font-size: 10px; color: #aaa; margin-bottom: 3px; }
+.sp-amt-val { font-size: 20px; font-weight: 700; color: #1a1a1a; }
+.sp-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px 16px; }
+.sp-fl { font-size: 10px; color: #aaa; margin-bottom: 2px; }
+.sp-fv { font-size: 12px; color: #1a1a1a; font-weight: 500; }
+.sp-vendor-card { border: 1px solid #e8e8e8; border-radius: 8px; padding: 12px 14px; }
+.sp-vendor-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 16px; }
+.sp-acct-card { border: 1px solid #e8e8e8; border-radius: 8px; padding: 12px 14px; }
+.sp-acct-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 16px; }
+.acct-status { font-size: 10px; font-weight: 600; padding: 2px 7px; border-radius: 4px; }
+.acct-status.failed { background: #fef2f2; color: #dc2626; border: 1px solid #fecaca; }
+.sp-pay-sum { border: 1px solid #e8e8e8; border-radius: 8px; overflow: hidden; }
+.sp-pay-sum-hdr { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; background: #fafafa; border-bottom: 1px solid #f0f0f0; }
+.sp-pay-sum-hdr span { font-size: 10px; font-weight: 600; color: #999; text-transform: uppercase; letter-spacing: 0.07em; padding: 7px 10px; }
+.sp-pay-sum-row { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; border-bottom: 1px solid #f5f5f5; }
+.sp-pay-sum-row:last-child { border-bottom: none; }
+.sp-pay-sum-row span { font-size: 12px; color: #374151; padding: 8px 10px; display: flex; align-items: center; }
+.sp-pay-totals { padding: 8px 10px 10px; }
+.sp-pay-tot-row { display: flex; justify-content: space-between; font-size: 12px; padding: 3px 0; }
+.sp-pay-tot-row.final { font-weight: 600; color: #1a1a1a; padding-top: 6px; border-top: 1px solid #f0f0f0; margin-top: 3px; }
+.bill-det-card { border:1px solid #e8e8e8; border-radius:8px; overflow:hidden; margin-top: 8px; }
+.bill-det-hdr { display:grid; grid-template-columns:2fr 60px 80px 70px 80px; background:#fafafa; border-bottom:1px solid #f0f0f0; }
+.bill-det-hdr span { font-size:10px; font-weight:600; color:#999; text-transform:uppercase; letter-spacing:0.07em; padding:7px 10px; }
+.bill-det-row { display:grid; grid-template-columns:2fr 60px 80px 70px 80px; border-bottom:1px solid #f5f5f5; }
+.bill-det-row:last-child { border-bottom:none; }
+.bill-det-row span { font-size:12px; color:#374151; padding:8px 10px; display:flex; align-items:center; }
+.acct-status { font-size: 10px; font-weight: 600; padding: 2px 7px; border-radius: 4px; }
+.acct-status.failed { background: #fef2f2; color: #dc2626; border: 1px solid #fecaca; }
+.acct-status.success { background: #f0fdf4; color: #15803d; border: 1px solid #86efac; }
+.sp-pay-status-success { display: inline-flex; align-items: center; background: #f0fdf4; color: #15803d; border: 1px solid #86efac; border-radius: 4px; font-size: 10px; font-weight: 600; padding: 2px 7px; }
+.sp-footer { position: absolute; bottom: 0; left: 0; right: 0; padding: 12px 18px; background: #fff; border-top: 1px solid #f0f0f0; display: flex; justify-content: flex-end; gap: 8px; align-items: center; }
+.sp-close-btn { background: #fff; border: 1px solid #e0e0e0; border-radius: 7px; padding: 7px 14px; font-size: 12.5px; color: #555; cursor: pointer; font-weight: 500; font-family: inherit; }
+.sp-more-actions-wrap { position: relative; }
+.sp-more-actions-btn { background: #fff; border: 1px solid #e0e0e0; border-radius: 7px; padding: 7px 14px; font-size: 12.5px; color: #333; cursor: pointer; font-weight: 500; font-family: inherit; display: flex; align-items: center; gap: 5px; }
+.sp-more-actions-btn:hover { background: #f5f5f5; }
+.sp-more-menu { display: none; position: absolute; bottom: calc(100% + 6px); right: 0; background: #fff; border: 1px solid #e0e0e0; border-radius: 8px; box-shadow: 0 4px 16px rgba(0,0,0,0.12); min-width: 160px; z-index: 60; overflow: hidden; }
+.sp-more-menu.open { display: block; }
+.sp-more-menu-item { padding: 9px 14px; font-size: 12.5px; color: #333; cursor: pointer; display: block; white-space: nowrap; }
+.sp-more-menu-item:hover { background: #f5f5f5; }
+.sp-more-menu-item.map-action { color: #15803d; font-weight: 500; }
+.sp-more-menu-item.map-action:hover { background: #f0faf4; }
+.sp-more-menu-divider { border: none; border-top: 1px solid #f0f0f0; margin: 2px 0; }
+.sp-quick-pay-btn { background: #1a2420; border: none; border-radius: 7px; padding: 7px 16px; font-size: 12.5px; color: #4ade80; cursor: pointer; font-weight: 600; font-family: inherit; display: flex; align-items: center; gap: 5px; }
+.sp-quick-pay-btn:hover { background: #243028; }
+.modal-bd { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 100; align-items: center; justify-content: center; }
+.modal-bd.open { display: flex; }
+.map-modal { background: #fff; border-radius: 14px; width: 560px; max-width: 96vw; max-height: 90vh; display: flex; flex-direction: column; box-shadow: 0 20px 60px rgba(0,0,0,0.18); overflow: hidden; }
+.bulk-modal { background: #fff; border-radius: 14px; width: 600px; max-width: 96vw; max-height: 90vh; display: flex; flex-direction: column; box-shadow: 0 20px 60px rgba(0,0,0,0.18); overflow: hidden; }
+
+/* ── ADD INSTRUMENT PANEL ── */
+.inst-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.3); z-index: 130; align-items: center; justify-content: center; }
+.inst-overlay.open { display: flex; }
+.inst-panel { background: #fff; border-radius: 12px; width: 360px; max-width: 94vw; box-shadow: 0 16px 48px rgba(0,0,0,0.22); overflow: hidden; }
+.inst-hdr { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; border-bottom: 1px solid #ebebeb; background: #fafafa; }
+.inst-title { font-size: 13.5px; font-weight: 600; color: #1a1a1a; }
+.inst-tabs { display: flex; border-bottom: 1px solid #ebebeb; }
+.inst-tab { font-size: 12px; padding: 8px 14px; cursor: pointer; color: #888; border-bottom: 2px solid transparent; transition: color 0.12s; }
+.inst-tab:hover { color: #444; }
+.inst-tab.active { color: #1a1a1a; border-bottom-color: #1a2420; font-weight: 500; }
+.inst-body { padding: 14px 16px; }
+.inst-form { display: none; }
+.inst-form.active { display: block; }
+.inst-field { margin-bottom: 12px; }
+.inst-label { font-size: 11px; font-weight: 500; color: #666; margin-bottom: 5px; display: flex; align-items: center; gap: 6px; }
+.inst-label .req { color: #dc2626; }
+.inst-input { width: 100%; border: 1px solid #e0e0e0; border-radius: 6px; padding: 7px 10px; font-size: 12.5px; color: #1a1a1a; font-family: inherit; outline: none; transition: border-color 0.12s; }
+.inst-input:focus { border-color: #16a34a; box-shadow: 0 0 0 2px rgba(22,163,74,0.07); }
+.inst-input.short { width: 110px; }
+.inst-nickname-wrap { background: #f8faf8; border: 1px dashed #c8e0c8; border-radius: 6px; padding: 8px 10px; display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.inst-nickname-val { font-size: 13px; font-weight: 600; color: #1a1a1a; font-family: monospace; flex: 1; }
+.inst-nickname-edit { font-size: 11px; color: #2563eb; cursor: pointer; white-space: nowrap; flex-shrink: 0; }
+.inst-nickname-input { font-size: 12.5px; font-weight: 600; color: #1a1a1a; font-family: monospace; border: none; background: transparent; outline: none; width: 100%; }
+.inst-auto-badge { font-size: 9px; font-weight: 600; background: #f0fdf4; color: #15803d; border: 1px solid #86efac; padding: 1px 6px; border-radius: 3px; }
+.inst-divider { height: 1px; background: #f0f0f0; margin: 12px 0; }
+.inst-footer { padding: 12px 16px; border-top: 1px solid #ebebeb; display: flex; justify-content: flex-end; gap: 8px; }
+.inst-cancel-btn { background: #fff; border: 1px solid #e0e0e0; border-radius: 7px; padding: 7px 14px; font-size: 12.5px; color: #555; cursor: pointer; font-family: inherit; font-weight: 500; }
+.inst-cancel-btn:hover { background: #f5f5f5; }
+.inst-create-btn { background: #1a2420; border: none; border-radius: 7px; padding: 7px 16px; font-size: 12.5px; color: #4ade80; cursor: pointer; font-family: inherit; font-weight: 600; }
+.inst-create-btn:hover { background: #243028; }
+.bmap-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 110; align-items: flex-start; justify-content: center; overflow-y: auto; padding: 24px; }
+.bmap-overlay.open { display: flex; }
+.bmap-modal { background: #fff; border-radius: 12px; width: 100%; max-width: 1200px; min-height: 600px; margin: auto; display: flex; flex-direction: column; box-shadow: 0 24px 64px rgba(0,0,0,0.22); overflow: hidden; }
+.bmap-hdr { padding: 16px 22px; border-bottom: 1px solid #ebebeb; display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; }
+.bmap-title { font-size: 15px; font-weight: 600; color: #1a1a1a; }
+.bmap-stats { display: grid; grid-template-columns: repeat(4, 1fr) auto; border-bottom: 1px solid #ebebeb; flex-shrink: 0; background: #fafafa; }
+.bmap-stat { padding: 12px 20px; border-right: 1px solid #ebebeb; }
+.bmap-stat:last-child { border-right: none; display: flex; align-items: center; padding: 10px 16px; }
+.bmap-stat-label { font-size: 10.5px; color: #999; margin-bottom: 3px; }
+.bmap-stat-val { font-size: 17px; font-weight: 600; color: #1a1a1a; }
+.bmap-stat-val.green { color: #15803d; }
+.bmap-toolbar { padding: 8px 16px; border-bottom: 1px solid #ebebeb; display: flex; align-items: center; gap: 7px; flex-shrink: 0; }
+.bmap-tb-btn { background: #fff; border: 1px solid #e0e0e0; border-radius: 6px; padding: 5px 11px; font-size: 12px; color: #444; cursor: pointer; display: flex; align-items: center; gap: 5px; font-family: inherit; white-space: nowrap; transition: background 0.12s; }
+.bmap-tb-btn:hover { background: #f5f5f5; }
+.bmap-tb-sep { width: 1px; height: 18px; background: #e8e8e8; margin: 0 2px; }
+.bmap-sel-count { font-size: 11.5px; color: #888; }
+.bmap-table-wrap { flex: 1; overflow: auto; min-height: 0; }
+.bmap-table-wrap::-webkit-scrollbar { width: 5px; height: 5px; }
+.bmap-table-wrap::-webkit-scrollbar-thumb { background: #e0e0e0; border-radius: 3px; }
+.bmap-table { width: max-content; min-width: 100%; border-collapse: collapse; }
+.bmap-table thead th { padding: 8px 11px; text-align: left; font-size: 10px; font-weight: 600; color: #999; letter-spacing: 0.06em; text-transform: uppercase; border-bottom: 1px solid #ebebeb; border-right: 1px solid #f0f0f0; background: #fafafa; white-space: nowrap; position: sticky; top: 0; z-index: 2; }
+.bmap-table thead th:last-child { border-right: none; }
+.bmap-table thead th.th-check { position: sticky; left: 0; z-index: 3; background: #fafafa; width: 36px; padding: 8px 10px; }
+.bmap-table tbody tr { border-bottom: 1px solid #f0f0f0; }
+.bmap-table tbody tr:hover { background: #f8fffe; }
+.bmap-table tbody tr.row-error { background: #fffbeb; }
+.bmap-table tbody td { padding: 8px 11px; white-space: nowrap; font-size: 12.5px; border-right: 1px solid #f5f5f5; vertical-align: middle; }
+.bmap-table tbody td:last-child { border-right: none; }
+.bmap-table tbody td.td-check { position: sticky; left: 0; background: #fff; z-index: 1; padding: 8px 10px; }
+.bmap-table tbody tr:hover td.td-check { background: #f8fffe; }
+.bmap-table tbody tr.row-error td.td-check { background: #fffbeb; }
+.bmap-input { border: 1px solid #e0e0e0; border-radius: 6px; padding: 5px 8px; font-size: 12px; font-family: inherit; color: #1a1a1a; background: #fff; outline: none; transition: border-color 0.12s; }
+.bmap-input:focus { border-color: #16a34a; box-shadow: 0 0 0 2px rgba(22,163,74,0.07); }
+.bmap-input.warn { border-color: #f59e0b; background: #fffbeb; color: #92400e; }
+.bmap-input::placeholder { color: #bbb; }
+.bmap-select { border: 1px solid #e0e0e0; border-radius: 6px; padding: 5px 8px; font-size: 12px; font-family: inherit; color: #1a1a1a; background: #fff; outline: none; cursor: pointer; }
+.bmap-select.warn { border-color: #f59e0b; background: #fffbeb; color: #92400e; }
+.bmap-footer { padding: 10px 20px; border-top: 1px solid #ebebeb; display: flex; align-items: center; gap: 8px; flex-shrink: 0; background: #fff; }
+.bmap-inline-row { display: none; align-items: center; gap: 10px; padding: 8px 16px; background: #f5faf7; border-bottom: 1px solid #e0f0e8; flex-shrink: 0; }
+.bmap-inline-row.open { display: flex; }
+.bmap-inline-label { font-size: 12px; font-weight: 500; color: #444; white-space: nowrap; }
+.bmap-inline-apply { background: #1a2420; color: #4ade80; border: none; border-radius: 6px; padding: 5px 14px; font-size: 12px; font-weight: 600; cursor: pointer; font-family: inherit; }
+.bmap-inline-apply:hover { background: #243028; }
+.bmap-inline-cancel { background: none; border: none; color: #888; font-size: 12px; cursor: pointer; font-family: inherit; padding: 5px 8px; }
+.bmap-inline-cancel:hover { color: #444; }
+.bmap-footer-btns { margin-left: auto; display: flex; gap: 8px; align-items: center; }
+.bmap-cancel-btn { background: #fff; border: 1px solid #e0e0e0; border-radius: 7px; padding: 8px 18px; font-size: 12.5px; color: #555; cursor: pointer; font-family: inherit; font-weight: 500; }
+.bmap-cancel-btn:hover { background: #f5f5f5; }
+.bmap-confirm-btn { background: #1a2420; border: none; border-radius: 7px; padding: 8px 20px; font-size: 12.5px; color: #4ade80; cursor: pointer; font-family: inherit; font-weight: 600; }
+.bmap-confirm-btn:hover { background: #243028; }
+.bmap-confirm-btn:disabled { background: #ccc; color: #888; cursor: not-allowed; }
+/* column picker panel */
+.col-picker { display: none; position: absolute; right: 16px; top: calc(100% + 4px); background: #fff; border: 1px solid #e0e0e0; border-radius: 8px; box-shadow: 0 4px 16px rgba(0,0,0,0.12); z-index: 60; padding: 10px 0; min-width: 200px; }
+.col-picker.open { display: block; }
+.col-picker-title { font-size: 10px; font-weight: 600; color: #aaa; text-transform: uppercase; letter-spacing: 0.07em; padding: 4px 14px 8px; }
+.col-picker-item { display: flex; align-items: center; gap: 8px; padding: 6px 14px; cursor: pointer; font-size: 12.5px; color: #444; }
+.col-picker-item:hover { background: #f5f5f5; }
+/* bulk set popovers */
+.bmap-popover { display: none; position: fixed; background: #fff; border: 1px solid #e0e0e0; border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.14); z-index: 120; padding: 14px 16px; min-width: 240px; }
+.bmap-popover.open { display: block; }
+.bmap-popover-title { font-size: 12px; font-weight: 600; color: #1a1a1a; margin-bottom: 10px; }
+.bmap-popover-btn { background: #1a2420; color: #4ade80; border: none; border-radius: 6px; padding: 7px 16px; font-size: 12px; font-weight: 600; cursor: pointer; font-family: inherit; width: 100%; margin-top: 10px; }
+.map-modal-hdr { padding: 20px 22px 16px; border-bottom: 1px solid #f0f0f0; flex-shrink: 0; }
+.map-modal-hdr-top { display: flex; align-items: flex-start; justify-content: space-between; }
+.map-modal-title { font-size: 15px; font-weight: 700; color: #1a1a1a; }
+.map-modal-sub { font-size: 12px; color: #888; margin-top: 3px; }
+.modal-x { background: none; border: none; cursor: pointer; color: #aaa; font-size: 20px; line-height: 1; padding: 0; }
+.modal-x:hover { color: #555; }
+.map-modal-body { overflow-y: auto; padding: 18px 22px 20px; flex: 1; }
+.map-modal-body::-webkit-scrollbar { width: 4px; }
+.map-modal-body::-webkit-scrollbar-thumb { background: #e8e8e8; border-radius: 2px; }
+.bill-summary-box { background: #fafafa; border: 1px solid #f0f0f0; border-radius: 8px; padding: 12px 14px; margin-bottom: 16px; }
+.bill-sum-label { font-size: 10px; font-weight: 600; color: #888; text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 8px; }
+.bill-sum-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 16px; }
+.bsk { font-size: 10px; color: #aaa; margin-bottom: 1px; }
+.bsv { font-size: 12.5px; color: #1a1a1a; font-weight: 500; }
+.bsv.green { color: #16a34a; }
+.map-divider { border: none; border-top: 1px solid #f0f0f0; margin: 16px 0; }
+.map-sec-title { font-size: 12px; font-weight: 600; color: #1a1a1a; margin-bottom: 12px; }
+.form-group { margin-bottom: 14px; }
+.form-label { display: block; font-size: 12px; font-weight: 500; color: #444; margin-bottom: 5px; }
+.form-label .req { color: #dc2626; }
+.form-label .opt { color: #aaa; font-weight: 400; font-size: 11px; }
+.form-input { width: 100%; border: 1px solid #e0e0e0; border-radius: 7px; padding: 8px 11px; font-size: 12.5px; color: #1a1a1a; font-family: inherit; outline: none; transition: border-color 0.15s; background: #fff; }
+.form-input:focus { border-color: #16a34a; box-shadow: 0 0 0 2px rgba(22,163,74,0.08); }
+.form-input::placeholder { color: #bbb; }
+select.form-input { cursor: pointer; }
+.form-row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.other-bills-box { background: #fffbeb; border: 1px solid #fde68a; border-radius: 8px; padding: 10px 14px; margin-bottom: 16px; }
+.ob-title { font-size: 11px; font-weight: 600; color: #92400e; margin-bottom: 8px; display: flex; align-items: center; gap: 5px; }
+.ob-item { display: flex; justify-content: space-between; align-items: center; padding: 4px 0; border-bottom: 1px solid rgba(251,191,36,0.2); }
+.ob-item:last-child { border-bottom: none; }
+.ob-id { font-size: 11.5px; color: #1a1a1a; font-weight: 500; }
+.ob-due { font-size: 11px; color: #888; }
+.ob-amt { font-size: 11.5px; font-weight: 600; color: #1a1a1a; }
+.warn-box { background: #fffbeb; border: 1px solid #fde68a; border-radius: 8px; padding: 10px 14px; margin-top: 16px; font-size: 12px; color: #92400e; display: flex; gap: 8px; line-height: 1.5; }
+.info-box { background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 8px; padding: 10px 14px; margin-bottom: 14px; font-size: 12px; color: #1e40af; display: flex; gap: 8px; line-height: 1.5; }
+.map-modal-footer { padding: 14px 22px; border-top: 1px solid #f0f0f0; display: flex; justify-content: flex-end; gap: 8px; flex-shrink: 0; background: #fff; }
+.btn { padding: 8px 18px; border-radius: 7px; font-size: 12.5px; font-family: inherit; cursor: pointer; font-weight: 500; }
+.btn-cancel { background: #fff; border: 1px solid #e0e0e0; color: #555; }
+.btn-cancel:hover { background: #f5f5f5; }
+.btn-confirm { background: #1a2420; border: none; color: #4ade80; font-weight: 600; }
+.btn-confirm:hover { background: #243028; }
+.bulk-bills-list { border: 1px solid #f0f0f0; border-radius: 8px; overflow: hidden; margin-bottom: 14px; }
+.bulk-bills-hdr { display: grid; grid-template-columns: 2fr 1.5fr 1fr; background: #fafafa; border-bottom: 1px solid #f0f0f0; }
+.bulk-bills-hdr span { font-size: 10px; font-weight: 600; color: #999; text-transform: uppercase; letter-spacing: 0.07em; padding: 7px 10px; }
+.bulk-bill-row { display: grid; grid-template-columns: 2fr 1.5fr 1fr; border-bottom: 1px solid #f5f5f5; }
+.bulk-bill-row:last-child { border-bottom: none; }
+.bulk-bill-row span { font-size: 12px; padding: 8px 10px; display: flex; align-items: center; }
+.bulk-total-bar { background: #f0faf4; border-radius: 7px; padding: 10px 14px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+.success-modal-inner { background: #fff; border-radius: 14px; width: 420px; max-width: 92vw; padding: 32px 28px; box-shadow: 0 20px 60px rgba(0,0,0,0.18); text-align: center; }
+.success-icon { width: 56px; height: 56px; border-radius: 50%; background: #f0fdf4; border: 2px solid #86efac; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; }
+.success-title { font-size: 16px; font-weight: 700; color: #1a1a1a; margin-bottom: 6px; }
+.success-sub { font-size: 13px; color: #888; margin-bottom: 20px; line-height: 1.5; }
+.success-meta { background: #fafafa; border-radius: 8px; padding: 12px 14px; margin-bottom: 20px; text-align: left; }
+.smr { display: flex; justify-content: space-between; padding: 4px 0; font-size: 12px; }
+.smk { color: #888; }
+.smv { font-weight: 500; color: #1a1a1a; }
+.success-btn { width: 100%; background: #1a2420; color: #4ade80; border: none; border-radius: 8px; padding: 10px; font-size: 13px; font-weight: 600; cursor: pointer; font-family: inherit; }
+.success-btn:hover { background: #243028; }
+.toast { display: none; position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); background: #1a1a1a; color: #fff; border-radius: 8px; padding: 11px 18px; font-size: 12.5px; z-index: 200; white-space: nowrap; align-items: center; gap: 9px; box-shadow: 0 4px 20px rgba(0,0,0,0.2); }
+.toast.show { display: flex; animation: fu 0.2s ease; }
+@keyframes fu { from { opacity:0; transform:translateX(-50%) translateY(8px); } to { opacity:1; transform:translateX(-50%) translateY(0); } }
+.mark-ready-banner { background: #f0faf4; border: 1px solid #bbf7d0; border-radius: 8px; padding: 10px 14px; margin-bottom: 14px; display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.banner-mark-btn { background: #16a34a; color: #fff; border: none; border-radius: 6px; padding: 6px 14px; font-size: 12px; font-weight: 600; cursor: pointer; white-space: nowrap; font-family: inherit; }
+.banner-mark-btn:hover { background: #15803d; }
+.show-all-link { font-size: 11px; color: #888; cursor: pointer; margin-top: 8px; display: flex; align-items: center; gap: 4px; }
+
+/* ── RTP SCREEN ── */
+#rtpView { display: none; flex: 1; flex-direction: column; overflow: hidden; }
+#rtpView.active { display: flex; }
+#billsView { display: flex; flex-direction: column; flex: 1; overflow: hidden; }
+#billsView.hidden { display: none; }
+.nav-sub-item { display: flex; align-items: center; gap: 8px; padding: 6px 16px 6px 34px; cursor: pointer; color: #5a7a68; font-size: 12px; border-left: 2px solid transparent; transition: background 0.12s, color 0.12s; }
+.nav-sub-item:hover { background: #1e2a24; color: #aed8be; }
+.nav-sub-item.active { color: #4ade80; border-left-color: #4ade80; background: #182820; font-weight: 500; }
+.rtp-account-bar { padding: 14px 20px 12px; border-bottom: 1px solid #f0f0f0; flex-shrink: 0; display: flex; align-items: center; gap: 14px; }
+.rtp-acct-card { display: flex; align-items: center; gap: 10px; background: #f8f8f8; border: 1px solid #e8e8e8; border-radius: 8px; padding: 8px 14px; }
+.rtp-acct-icon { width: 30px; height: 30px; border-radius: 6px; background: #fef2f2; display: flex; align-items: center; justify-content: center; }
+.rtp-acct-name { font-size: 11px; color: #888; }
+.rtp-acct-bal { font-size: 15px; font-weight: 600; color: #1a1a1a; }
+.rtp-acct-time { font-size: 10.5px; color: #aaa; }
+.rtp-tabs-row { display: flex; align-items: center; padding: 0 20px; border-bottom: 1px solid #e8e8e8; flex-shrink: 0; }
+.rtp-tab { font-size: 12.5px; color: #888; padding: 10px 14px; cursor: pointer; border-bottom: 2px solid transparent; white-space: nowrap; display: flex; align-items: center; gap: 5px; }
+.rtp-tab:hover { color: #444; }
+.rtp-tab.active { color: #1a1a1a; border-bottom-color: #1a1a1a; font-weight: 500; }
+.rtp-tab-badge { background: #e8e8e8; color: #666; font-size: 10px; font-weight: 600; padding: 1px 6px; border-radius: 10px; }
+.rtp-tab.active .rtp-tab-badge { background: #1a2420; color: #4ade80; }
+.rtp-filter-row { display: flex; align-items: center; justify-content: space-between; padding: 8px 20px; border-bottom: 1px solid #f0f0f0; flex-shrink: 0; }
+.rtp-direct-pay { background: #1a2420; color: #4ade80; border: none; border-radius: 6px; padding: 6px 14px; font-size: 12px; font-weight: 600; cursor: pointer; font-family: inherit; display: flex; align-items: center; gap: 5px; }
+.rtp-direct-pay:hover { background: #243028; }
+.rtp-summary-row { display: flex; align-items: center; padding: 10px 20px; border-bottom: 1px solid #f0f0f0; flex-shrink: 0; gap: 0; }
+.rtp-sum-item { display: flex; flex-direction: column; gap: 2px; padding-right: 24px; margin-right: 24px; border-right: 1px solid #e8e8e8; }
+.rtp-sum-item:last-child { border-right: none; }
+/* RTP table */
+.rtp-table-wrap { flex: 1; overflow: auto; }
+.rtp-table-wrap::-webkit-scrollbar { width: 5px; height: 5px; }
+.rtp-table-wrap::-webkit-scrollbar-thumb { background: #e0e0e0; border-radius: 3px; }
+.rtp-table { width: max-content; min-width: 100%; border-collapse: collapse; }
+.rtp-table thead th { padding: 8px 12px; text-align: left; font-size: 10px; font-weight: 600; color: #999; letter-spacing: 0.06em; text-transform: uppercase; border-bottom: 1px solid #ebebeb; border-right: 1px solid #f0f0f0; background: #fafafa; white-space: nowrap; position: sticky; top: 0; z-index: 2; }
+.rtp-table thead th:last-child { border-right: none; }
+.rtp-table thead th.th-rtp-check { position: sticky; left: 0; z-index: 3; background: #fafafa; width: 36px; padding: 8px 10px; }
+.rtp-table tbody tr { border-bottom: 1px solid #f0f0f0; transition: background 0.1s; cursor: pointer; }
+.rtp-table tbody tr:hover { background: #f8fffe; }
+.rtp-table tbody tr.rtp-active-row { background: #f0faf4; }
+.rtp-table tbody td { padding: 9px 12px; white-space: nowrap; font-size: 12.5px; border-right: 1px solid #f5f5f5; vertical-align: middle; }
+.rtp-table tbody td:last-child { border-right: none; }
+.rtp-table tbody td.td-rtp-check { position: sticky; left: 0; background: #fff; z-index: 1; padding: 9px 10px; }
+.rtp-table tbody tr:hover td.td-rtp-check { background: #f8fffe; }
+.rtp-table tbody tr.rtp-active-row td.td-rtp-check { background: #f0faf4; }
+/* Priority dropdown in table */
+.priority-select { border: none; background: transparent; font-size: 12.5px; color: #555; cursor: pointer; font-family: inherit; outline: none; padding: 0; }
+/* RTP actions column */
+.rtp-actions-cell { display: flex; align-items: center; gap: 6px; }
+.rtp-icon-btn { width: 26px; height: 26px; border-radius: 50%; border: none; background: transparent; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #aaa; transition: background 0.12s; }
+.rtp-icon-btn:hover { background: #f0f0f0; color: #555; }
+.rtp-icon-btn.go { background: #1a2420; color: #4ade80; border-radius: 6px; width: 26px; height: 26px; }
+.rtp-icon-btn.go:hover { background: #243028; }
+/* RTP bulk bar */
+.rtp-bulk-bar { display: none; position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); background: #1a2420; border-radius: 10px; box-shadow: 0 4px 24px rgba(0,0,0,0.28); align-items: stretch; gap: 0; z-index: 30; white-space: nowrap; overflow: visible; }
+.rtp-bulk-bar.show { display: flex; animation: floatUp 0.2s ease; }
+.rtp-bulk-close { width: 40px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #7a9a88; font-size: 16px; flex-shrink: 0; border-right: 1px solid #2a3830; }
+.rtp-bulk-close:hover { color: #cde8d8; }
+.rtp-bulk-stat { display: flex; flex-direction: column; justify-content: center; padding: 0 18px; border-right: 1px solid #2a3830; flex-shrink: 0; min-height: 56px; }
+.rtp-bulk-stat-label { font-size: 10px; color: #7a9a88; letter-spacing: 0.04em; text-transform: uppercase; margin-bottom: 2px; }
+.rtp-bulk-stat-val { font-size: 13px; font-weight: 600; color: #fff; }
+.rtp-bulk-stat-val.accent { padding-left: 7px; border-left: 2px solid #2563eb; }
+.rtp-bulk-stat-val.accent2 { padding-left: 7px; border-left: 2px solid #f59e0b; }
+.rtp-bulk-btns { display: flex; align-items: center; gap: 7px; padding: 0 12px; }
+.rtp-opt-wrap { position: relative; }
+.rtp-opt-btn { width: 34px; height: 34px; border-radius: 7px; background: rgba(255,255,255,0.12); border: none; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #cde8d8; font-size: 16px; }
+.rtp-opt-btn:hover { background: rgba(255,255,255,0.2); }
+.rtp-opt-menu { display: none; position: absolute; bottom: calc(100% + 8px); right: 0; background: #fff; border: 1px solid #e0e0e0; border-radius: 8px; box-shadow: 0 4px 16px rgba(0,0,0,0.14); min-width: 170px; overflow: hidden; z-index: 50; }
+.rtp-opt-menu.open { display: block; }
+.rtp-opt-menu-item { padding: 10px 14px; font-size: 12.5px; color: #333; cursor: pointer; display: flex; align-items: center; gap: 8px; }
+.rtp-opt-menu-item:hover { background: #f5f5f5; }
+.rtp-opt-menu-item.primary { color: #15803d; font-weight: 500; }
+.rtp-opt-menu-item.primary:hover { background: #f0faf4; }
+.rtp-action-btn { border: none; border-radius: 7px; padding: 7px 14px; font-size: 12px; font-weight: 600; cursor: pointer; font-family: inherit; white-space: nowrap; }
+.rtp-quickpay-btn { background: rgba(255,255,255,0.12); color: #fff; border: 1px solid rgba(255,255,255,0.2); }
+.rtp-quickpay-btn:hover { background: rgba(255,255,255,0.2); }
+.rtp-editpay-btn { background: #4ade80; color: #1a2420; }
+.rtp-editpay-btn:hover { background: #22c55e; }
+</style>
+</head>
+<body>
+<div class="app">
+<nav class="nav">
+  <div class="nav-logo"><div class="nav-logo-text">my<span>sa</span></div></div>
+  <div style="padding:8px 0;">
+    <div class="nav-item"><svg width="14" height="14" fill="none" viewBox="0 0 14 14"><rect x="1" y="1" width="5" height="5" rx="1" stroke="currentColor" stroke-width="1.2"/><rect x="8" y="1" width="5" height="5" rx="1" stroke="currentColor" stroke-width="1.2"/><rect x="1" y="8" width="5" height="5" rx="1" stroke="currentColor" stroke-width="1.2"/><rect x="8" y="8" width="5" height="5" rx="1" stroke="currentColor" stroke-width="1.2"/></svg>Home</div>
+    <div class="nav-item" id="navBills" onclick="switchView('bills')" style="border-left-color:#4ade80;background:#1e2e28;color:#e8f5ee;"><svg width="14" height="14" fill="none" viewBox="0 0 14 14"><rect x="1" y="2" width="12" height="10" rx="1.5" stroke="currentColor" stroke-width="1.2"/><path d="M1 5.5h12M4 8.5h2M8 8.5h2" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>Bills</div>
+    <div class="nav-item"><svg width="14" height="14" fill="none" viewBox="0 0 14 14"><path d="M7 1C4.8 1 3 2.8 3 5s1.8 4 4 4 4-1.8 4-4-1.8-4-4-4zM1 13c0-2.8 2.7-5 6-5s6 2.2 6 5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>Vendors</div>
+    <div class="nav-item"><svg width="14" height="14" fill="none" viewBox="0 0 14 14"><circle cx="7" cy="5" r="3" stroke="currentColor" stroke-width="1.2"/><path d="M1 13c0-3 2.7-5 6-5s6 2 6 5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>Reimbursements</div>
+    <hr class="nav-divider">
+    <div class="nav-item" id="navPayments" onclick="switchView('rtp')"><svg width="14" height="14" fill="none" viewBox="0 0 14 14"><rect x="1" y="3" width="12" height="9" rx="1.5" stroke="currentColor" stroke-width="1.2"/><path d="M1 6h12M4 9h2M9 9h1" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>Payments<svg width="10" height="10" viewBox="0 0 10 10" fill="none" style="margin-left:auto;opacity:0.4;" id="paymentsChevron"><path d="M2.5 4l2.5 2.5L7.5 4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg></div>
+    <div id="paymentsSubnav" style="display:none;">
+      <div class="nav-sub-item active" id="navRtp" onclick="switchView('rtp')">Ready to Pay</div>
+      <div class="nav-sub-item" id="navInAuth">In Auth</div>
+    </div>
+    <hr class="nav-divider">
+    <div class="nav-item"><svg width="14" height="14" fill="none" viewBox="0 0 14 14"><path d="M2 11V8l2-2h6l2 2v3H2z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/><path d="M5 11v2h4v-2M7 6V1" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>Smart Statement</div>
+    <div class="nav-item"><svg width="14" height="14" fill="none" viewBox="0 0 14 14"><rect x="1" y="1" width="12" height="12" rx="1.5" stroke="currentColor" stroke-width="1.2"/><path d="M4 7h6M4 4.5h6M4 9.5h4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>Accounting</div>
+    <div class="nav-item"><svg width="14" height="14" fill="none" viewBox="0 0 14 14"><path d="M2 11V4l5-2.5L12 4v7H9V8H5v3H2z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/></svg>Reports<svg width="10" height="10" viewBox="0 0 10 10" fill="none" style="margin-left:auto;opacity:0.4;"><path d="M2.5 4l2.5 2.5L7.5 4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg></div>
+    <div class="nav-item"><svg width="14" height="14" fill="none" viewBox="0 0 14 14"><circle cx="7" cy="7" r="2" stroke="currentColor" stroke-width="1.2"/><path d="M7 1v1.5M7 11.5V13M1 7h1.5M11.5 7H13" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>Settings<svg width="10" height="10" viewBox="0 0 10 10" fill="none" style="margin-left:auto;opacity:0.4;"><path d="M2.5 4l2.5 2.5L7.5 4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg></div>
+  </div>
+  <div class="nav-bottom"><div class="nav-bottom-item"><svg width="12" height="12" fill="none" viewBox="0 0 12 12"><path d="M2 6h8M4 4l-2 2 2 2" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>Keep closed</div></div>
+</nav>
+
+<div class="main">
+  <div class="announce-bar"><svg width="13" height="13" fill="none" viewBox="0 0 13 13"><circle cx="6.5" cy="6.5" r="5.5" stroke="#d97706" stroke-width="1.1"/><path d="M6.5 5.5v4" stroke="#d97706" stroke-width="1.1" stroke-linecap="round"/><circle cx="6.5" cy="3.5" r="0.6" fill="#d97706"/></svg>We have scheduled maintenance tonight (May 25th) from 10:00 PM to 12:00 AM. Services will be unavailable during this window. Apologies for the inconvenience caused.</div>
+  <div class="topbar">
+    <div class="topbar-left"><div class="page-title" id="pageTitle">Bills</div></div>
+    <div class="topbar-right">
+      <div class="email-chip"><svg width="11" height="11" fill="none" viewBox="0 0 11 11"><rect x="1" y="2" width="9" height="7" rx="1" stroke="#888" stroke-width="1"/><path d="M1 3.5l4.5 3 4.5-3" stroke="#888" stroke-width="1"/></svg>myqf@invoice.mysa.io</div>
+      <div class="icon-btn"><svg width="13" height="13" fill="none" viewBox="0 0 13 13"><path d="M11 6.5A4.5 4.5 0 1 1 6.5 2" stroke="#888" stroke-width="1.2" stroke-linecap="round"/><path d="M11 2v4H7" stroke="#888" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <div class="icon-btn"><svg width="13" height="13" fill="none" viewBox="0 0 13 13"><ellipse cx="6.5" cy="6.5" rx="5.5" ry="3.5" stroke="#888" stroke-width="1.1"/><circle cx="6.5" cy="6.5" r="1.5" fill="#888"/></svg></div>
+      <div class="add-bill-btn" id="addBillBtn"><svg width="11" height="11" fill="none" viewBox="0 0 11 11"><path d="M5.5 1v9M1 5.5h9" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>Add Bill<svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 3.5l3 3 3-3" stroke="#555" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <div class="av-top">AN</div>
+    </div>
+  </div>
+
+  <!-- ── BILLS VIEW ── -->
+  <div id="billsView">
+  <div class="bill-tabs-row">
+    <div class="bill-tab">Finance Review <span class="tab-badge">65</span></div>
+    <div class="bill-tab">My Approvals <span class="tab-badge">214</span></div>
+    <div class="bill-tab">My Uploads</div>
+    <div class="bill-tab">All Drafts <span class="tab-badge">277</span></div>
+    <div class="bill-tab active">All Bills</div>
+    <div class="bill-tab">Rejected</div>
+  </div>
+
+  <div class="content" id="mainContent">
+    <div class="filter-row">
+      <div class="filter-left">
+        <span class="filter-label">Filters:</span>
+        <div class="chip active" onclick="this.classList.toggle('active')">Awaiting Payment</div>
+        <div class="chip active" onclick="this.classList.toggle('active')">Unpaid</div>
+        <div class="chip" onclick="this.classList.toggle('active')">Hide on-hold bills</div>
+        <div class="chip" onclick="this.classList.toggle('active')">High Priority</div>
+        <div class="chip" onclick="this.classList.toggle('active')">More Filters <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 3.5l3 3 3-3" stroke="#888" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      </div>
+      <div class="sort-label">Sort By: Recommended <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 3.5l3 3 3-3" stroke="#888" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+    </div>
+    <div class="summary-row">
+      <div class="summary-item"><div class="sum-label blue">Total count</div><div class="sum-value">456</div></div>
+      <div class="summary-item"><div class="sum-label amber">Total Bill Amount</div><div class="sum-value">&#8377;15,98,38,006.08</div></div>
+      <div class="summary-item"><div class="sum-label green">Total Due Amount</div><div class="sum-value">&#8377;1,24,74,079.96</div></div>
+      <div style="margin-left:auto;"><button onclick="showToast('Preparing download...')" style="background:none;border:none;cursor:pointer;color:#888;padding:4px;"><svg width="16" height="16" fill="none" viewBox="0 0 16 16"><path d="M2 12h12M8 3v7M5 7l3 3 3-3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th class="col-check"><input type="checkbox" id="chkAll" style="width:13px;height:13px;" onchange="toggleAll(this)"></th>
+            <th style="min-width:200px;">Vendor</th>
+            <th style="min-width:185px;">ID</th>
+            <th style="min-width:40px;">Doc</th>
+            <th style="min-width:120px;text-align:right;">Bill Amount</th>
+            <th style="min-width:90px;">Due Date</th>
+            <th style="min-width:130px;">Status</th>
+            <th style="min-width:220px;">Bill Narration</th>
+            <th style="min-width:90px;">Bill Date</th>
+            <th style="min-width:110px;">Uploaded By</th>
+            <th style="min-width:110px;">Payment Priority</th>
+            <th style="min-width:80px;">Comments</th>
+            <th style="min-width:120px;">Mysa Category</th>
+            <th style="min-width:70px;">Type</th>
+            <th style="min-width:100px;">Branch</th>
+            <th style="min-width:130px;">Department</th>
+            <th style="min-width:90px;">BU (abdef)</th>
+            <th style="min-width:90px;">CC (abdef)</th>
+            <th style="min-width:95px;">Uploaded At</th>
+            <th style="min-width:90px;">Bill Source</th>
+            <th style="min-width:100px;text-align:right;">Due Amount</th>
+            <th style="min-width:95px;">Posting Date</th>
+            <th style="min-width:100px;">PO Number</th>
+            <th style="min-width:120px;">Latest Approval Date</th>
+            <th style="min-width:120px;">Latest Approval By</th>
+            <th style="min-width:95px;">Pay By Date</th>
+            <th style="min-width:100px;text-align:right;">Got Amount</th>
+            <th style="min-width:130px;">TDS / TCS Details</th>
+            <th style="min-width:100px;text-align:right;">Sub Total</th>
+          </tr>
+        </thead>
+        <tbody id="billsTbody"></tbody>
+      </table>
+    </div>
+  </div>
+  </div><!-- end billsView -->
+
+  <!-- ── RTP VIEW ── -->
+  <div id="rtpView">
+    <div class="rtp-account-bar">
+      <div class="rtp-acct-card">
+        <div class="rtp-acct-icon"><svg width="16" height="16" fill="none" viewBox="0 0 16 16"><rect x="1" y="4" width="14" height="10" rx="1.5" stroke="#dc2626" stroke-width="1.2"/><path d="M1 7h14" stroke="#dc2626" stroke-width="1.2"/><circle cx="4.5" cy="10" r="1" fill="#dc2626"/></svg></div>
+        <div>
+          <div class="rtp-acct-name">IDFC A/C xx7992</div>
+          <div class="rtp-acct-bal">&#8377; 86.53</div>
+          <div class="rtp-acct-time">28 May 26, 09:18 PM <svg width="11" height="11" fill="none" viewBox="0 0 11 11" style="vertical-align:middle;"><path d="M9 5.5A3.5 3.5 0 1 1 5.5 2" stroke="#aaa" stroke-width="1"/><path d="M9 2v3H6" stroke="#aaa" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        </div>
+      </div>
+      <div style="margin-left:auto;">
+        <button class="rtp-direct-pay"><svg width="12" height="12" fill="none" viewBox="0 0 12 12"><path d="M1 7l3-4 2 2 2-3 3 5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>Direct Pay<svg width="10" height="10" viewBox="0 0 10 10" fill="none" style="margin-left:3px;"><path d="M2 3.5l3 3 3-3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg></button>
+      </div>
+    </div>
+    <div class="rtp-tabs-row">
+      <div class="rtp-tab active">Bills <span class="rtp-tab-badge">40</span></div>
+      <div class="rtp-tab">Reimbursements <span class="rtp-tab-badge">7</span></div>
+    </div>
+    <div class="rtp-filter-row">
+      <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
+        <span style="font-size:12px;color:#888;">Filters:</span>
+        <div class="chip" onclick="this.classList.toggle('active')">Overdue</div>
+        <div class="chip" onclick="this.classList.toggle('active')">Hide on-hold bills</div>
+        <div class="chip" onclick="this.classList.toggle('active')">High Priority</div>
+        <div class="chip" onclick="this.classList.toggle('active')">More Filters <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 3.5l3 3 3-3" stroke="#888" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      </div>
+      <div class="sort-label">Sort By: Latest Created <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 3.5l3 3 3-3" stroke="#888" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+    </div>
+    <div class="rtp-summary-row">
+      <div class="rtp-sum-item"><div class="sum-label blue">Total count</div><div class="sum-value" id="rtpTotalCount">0</div></div>
+      <div class="rtp-sum-item"><div class="sum-label amber">Total Bill Amount</div><div class="sum-value" id="rtpTotalBillAmt">&#8377;0</div></div>
+      <div class="rtp-sum-item"><div class="sum-label green">Total Due Amount</div><div class="sum-value" id="rtpTotalDueAmt">&#8377;0</div></div>
+      <div style="margin-left:auto;"><button onclick="showToast('Preparing download...')" style="background:none;border:none;cursor:pointer;color:#888;padding:4px;"><svg width="16" height="16" fill="none" viewBox="0 0 16 16"><path d="M2 12h12M8 3v7M5 7l3 3 3-3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>
+    </div>
+    <div class="rtp-table-wrap">
+      <table class="rtp-table">
+        <thead>
+          <tr>
+            <th class="th-rtp-check"><input type="checkbox" id="rtpChkAll" style="width:13px;height:13px;accent-color:#1a2420;" onchange="rtpToggleAll(this)"></th>
+            <th style="min-width:200px;">Vendor</th>
+            <th style="min-width:190px;">ID</th>
+            <th style="min-width:40px;">Bill</th>
+            <th style="min-width:120px;text-align:right;">Bill Amount</th>
+            <th style="min-width:120px;text-align:right;">Due Amount</th>
+            <th style="min-width:100px;">Due Date</th>
+            <th style="min-width:110px;">Pay By Date</th>
+            <th style="min-width:130px;">Status</th>
+            <th style="min-width:140px;">Payment Priority</th>
+            <th style="min-width:100px;">Actions</th>
+          </tr>
+        </thead>
+        <tbody id="rtpTbody"></tbody>
+      </table>
+    </div>
+  </div><!-- end rtpView -->
+
+</div><!-- end .main -->
+
+<!-- RTP floating bulk bar -->
+<div class="rtp-bulk-bar" id="rtpBulkBar">
+  <div class="rtp-bulk-close" onclick="rtpClearSelection()">&#215;</div>
+  <div class="rtp-bulk-stat">
+    <div class="rtp-bulk-stat-label">Selected Count</div>
+    <div class="rtp-bulk-stat-val accent" id="rtpBulkCount">0</div>
+  </div>
+  <div class="rtp-bulk-stat">
+    <div class="rtp-bulk-stat-label">Bill Amount</div>
+    <div class="rtp-bulk-stat-val accent2" id="rtpBulkBillAmt">&#8377;0.00</div>
+  </div>
+  <div class="rtp-bulk-stat" style="border-right:none;">
+    <div class="rtp-bulk-stat-label">Due Amount</div>
+    <div class="rtp-bulk-stat-val accent2" id="rtpBulkDueAmt">&#8377;0.00</div>
+  </div>
+  <div class="rtp-bulk-btns">
+    <div class="rtp-opt-wrap">
+      <button class="rtp-opt-btn" id="rtpOptBtn" onclick="toggleRtpOptMenu(event)" title="More options">&#8942;</button>
+      <div class="rtp-opt-menu" id="rtpOptMenu">
+        <div class="rtp-opt-menu-item" onclick="closeRtpOptMenu();showToast('Downloading...')">
+          <svg width="14" height="14" fill="none" viewBox="0 0 14 14"><path d="M2 11h10M7 3v6M4 7l3 3 3-3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Download
+        </div>
+        <div class="rtp-opt-menu-item primary" onclick="closeRtpOptMenu();rtpOpenMarkAsPaid()">
+          <svg width="14" height="14" fill="none" viewBox="0 0 14 14"><circle cx="7" cy="7" r="5.5" stroke="#15803d" stroke-width="1.2"/><path d="M4.5 7l2 2 3-3" stroke="#15803d" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Mark as Paid
+        </div>
+      </div>
+    </div>
+    <button class="rtp-action-btn rtp-quickpay-btn" id="rtpQuickPayBtn">Quick Pay (<span id="rtpQPCount">0</span>)</button>
+    <button class="rtp-action-btn rtp-editpay-btn" id="rtpEditPayBtn">Edit &amp; Pay (<span id="rtpEPCount">0</span>)</button>
+  </div>
+</div>
+<div class="bulk-bar" id="bulkBar">
+  <div class="bulk-close-btn" onclick="clearSelection()">&#215;</div>
+  <div class="bulk-stat">
+    <div class="bulk-stat-label">Selected</div>
+    <div class="bulk-stat-val" id="bulkCount">0</div>
+  </div>
+  <div class="bulk-stat">
+    <div class="bulk-stat-label">Total Bill Amount</div>
+    <div class="bulk-stat-val blue" id="bulkTotalAmt">&#8377;0.00</div>
+  </div>
+  <div class="bulk-stat">
+    <div class="bulk-stat-label">Total Due Amount</div>
+    <div class="bulk-stat-val amber" id="bulkTotalDue">&#8377;0.00</div>
+  </div>
+  <div class="bulk-actions">
+    <div class="bulk-dl-btn"><svg width="14" height="14" fill="none" viewBox="0 0 14 14"><path d="M2 11h10M7 3v6M4 7l3 3 3-3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+  </div>
+</div>
+
+<div class="side-overlay" id="sideOverlay" onclick="closePanel()"></div>
+<div class="side-panel" id="sidePanel">
+  <div class="sp-hdr">
+    <div class="sp-hdr-top">
+      <div style="display:flex;align-items:center;gap:10px;">
+        <div class="sp-av" id="spAv"></div>
+        <div><div class="sp-name" id="spName"></div><div class="sp-id-row"><span class="sp-id" id="spId"></span><span id="spMsme"></span></div></div>
+      </div>
+      <div class="sp-hdr-acts">
+        <div class="sp-btn"><svg width="13" height="13" fill="none" viewBox="0 0 13 13"><rect x="2" y="2" width="9" height="9" rx="1.5" stroke="currentColor" stroke-width="1.1"/></svg></div>
+        <div class="sp-btn"><svg width="13" height="13" fill="none" viewBox="0 0 13 13"><circle cx="4" cy="6.5" r="1" fill="currentColor"/><circle cx="9" cy="6.5" r="1" fill="currentColor"/></svg></div>
+        <div class="sp-close" onclick="closePanel()">&#215;</div>
+      </div>
+    </div>
+    <div class="sp-flag-row" id="spFlags"></div>
+  </div>
+  <div class="sp-tabs-row">
+    <div class="sp-tab active" onclick="spTab('details',this)">Details</div>
+    <div class="sp-tab" onclick="spTab('comments',this)">Comments &amp; Additional Docs <span style="width:7px;height:7px;background:#2563eb;border-radius:50%;display:inline-block;margin-left:3px;"></span></div>
+  </div>
+  <div class="sp-body" id="spBody"></div>
+  <div class="sp-footer" id="spFooter">
+    <button class="sp-close-btn" onclick="closePanel()">Close</button>
+    <div class="sp-more-actions-wrap" id="spMoreWrap">
+      <button class="sp-more-actions-btn" onclick="toggleMoreMenu(event)">
+        More Actions
+        <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 3.5l3 3 3-3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+      <div class="sp-more-menu" id="spMoreMenu">
+        <div class="sp-more-menu-item" id="spMenuEditPay" onclick="closeMoreMenu()">Edit and Pay</div>
+        <div class="sp-more-menu-item map-action" id="spMenuMarkPaid" onclick="closeMoreMenu();openModalFromPanel()">Mark as Paid</div>
+        <hr class="sp-more-menu-divider" id="spMenuDivider">
+        <div class="sp-more-menu-item" id="spMenuReject" onclick="closeMoreMenu()">Reject</div>
+        <div class="sp-more-menu-item" onclick="closeMoreMenu()">Set on Hold</div>
+      </div>
+    </div>
+    <button class="sp-quick-pay-btn" id="spQuickPayBtn">
+      <svg width="12" height="12" fill="none" viewBox="0 0 12 12"><path d="M1 7l3-4 2 2 2-3 3 5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      Quick Pay
+    </button>
+  </div>
+</div>
+
+<div class="modal-bd" id="mapModal">
+  <div class="map-modal">
+    <div class="map-modal-hdr">
+      <div class="map-modal-hdr-top">
+        <div><div class="map-modal-title">Mark as paid</div><div class="map-modal-sub" id="mapSub"></div></div>
+        <button class="modal-x" onclick="closeMapModal()">&#215;</button>
+      </div>
+    </div>
+    <div class="map-modal-body" id="mapBody"></div>
+    <div class="map-modal-footer">
+      <button class="btn btn-cancel" onclick="closeMapModal()">Cancel</button>
+      <button class="btn btn-confirm" onclick="confirmMarkAsPaid()">Mark as paid &amp; create entry</button>
+    </div>
+  </div>
+</div>
+
+<div class="bmap-overlay" id="bmapOverlay">
+  <div class="bmap-modal" id="bmapModal">
+
+    <div class="bmap-hdr">
+      <div class="bmap-title">Mark as paid</div>
+      <button onclick="closeBmapModal()" style="background:none;border:none;cursor:pointer;color:#aaa;font-size:20px;line-height:1;padding:0;">&#215;</button>
+    </div>
+
+    <div class="bmap-stats" id="bmapStats">
+      <div class="bmap-stat"><div class="bmap-stat-label">No. of bills</div><div class="bmap-stat-val" id="bmapStatBills">0</div></div>
+      <div class="bmap-stat"><div class="bmap-stat-label">No. of vendors</div><div class="bmap-stat-val" id="bmapStatVendors">0</div></div>
+      <div class="bmap-stat"><div class="bmap-stat-label">Total bill amount</div><div class="bmap-stat-val" id="bmapStatBillAmt">&#8377;0</div></div>
+      <div class="bmap-stat"><div class="bmap-stat-label">Total amount to be paid</div><div class="bmap-stat-val green" id="bmapStatDueAmt">&#8377;0</div></div>
+      <div class="bmap-stat"><button class="bmap-confirm-btn" id="bmapConfirmBtn" onclick="confirmBmap()">Confirm</button></div>
+    </div>
+
+    <div class="bmap-toolbar">
+      <span class="bmap-sel-count" id="bmapSelCount"></span>
+      <div class="bmap-tb-sep"></div>
+      <button class="bmap-tb-btn" onclick="toggleInlineRow('bulkAcctRow',event)">
+        <svg width="13" height="13" fill="none" viewBox="0 0 13 13"><rect x="1" y="3" width="11" height="8" rx="1.2" stroke="currentColor" stroke-width="1.1"/><path d="M1 5.5h11" stroke="currentColor" stroke-width="1.1"/><circle cx="4" cy="8.5" r="1" fill="currentColor"/></svg>
+        Bulk set account
+      </button>
+      <button class="bmap-tb-btn" onclick="toggleInlineRow('bulkDateRow',event)">
+        <svg width="13" height="13" fill="none" viewBox="0 0 13 13"><rect x="1" y="2" width="11" height="10" rx="1.2" stroke="currentColor" stroke-width="1.1"/><path d="M1 5.5h11M4 1v2M9 1v2" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"/></svg>
+        Bulk set date
+      </button>
+      <button class="bmap-tb-btn" onclick="holdGst()">
+        <svg width="13" height="13" fill="none" viewBox="0 0 13 13"><rect x="1" y="3" width="11" height="8" rx="1.2" stroke="currentColor" stroke-width="1.1"/><path d="M1 5.5h11" stroke="currentColor" stroke-width="1.1"/><circle cx="4" cy="8.5" r="1" fill="currentColor"/><path d="M8.5 7.5l1 1 1.5-1.5" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Hold GST
+      </button>
+      <button class="bmap-tb-btn" onclick="resetBmapRows()">
+        <svg width="13" height="13" fill="none" viewBox="0 0 13 13"><path d="M11 6.5A4.5 4.5 0 1 1 6.5 2" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"/><path d="M11 2v4H7" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Reset
+      </button>
+      <div style="margin-left:auto;position:relative;">
+        <button class="bmap-tb-btn" id="colPickerBtn" onclick="toggleColPicker(event)">
+          <svg width="13" height="13" fill="none" viewBox="0 0 13 13"><path d="M1 4h11M1 7h11M1 10h11" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"/><rect x="4" y="2.5" width="2" height="3" rx="0.5" fill="currentColor"/><rect x="8" y="5.5" width="2" height="3" rx="0.5" fill="currentColor"/></svg>
+          Columns
+        </button>
+        <div class="col-picker" id="colPicker">
+          <div class="col-picker-title">Optional columns</div>
+          <label class="col-picker-item"><input type="checkbox" id="col-gst" onchange="toggleCol('gst',this.checked)" style="width:13px;height:13px;accent-color:#1a2420;"> GST amount</label>
+          <label class="col-picker-item"><input type="checkbox" id="col-cat" onchange="toggleCol('cat',this.checked)" style="width:13px;height:13px;accent-color:#1a2420;"> Mysa category</label>
+          <label class="col-picker-item"><input type="checkbox" id="col-bu" onchange="toggleCol('bu',this.checked)" style="width:13px;height:13px;accent-color:#1a2420;"> BU</label>
+          <label class="col-picker-item"><input type="checkbox" id="col-cc" onchange="toggleCol('cc',this.checked)" style="width:13px;height:13px;accent-color:#1a2420;"> CC</label>
+          <label class="col-picker-item"><input type="checkbox" id="col-dept" onchange="toggleCol('dept',this.checked)" style="width:13px;height:13px;accent-color:#1a2420;"> Department</label>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bulk set account inline row -->
+    <div class="bmap-inline-row" id="bulkAcctRow" onclick="event.stopPropagation()">
+      <span class="bmap-inline-label">Set account for all selected bills:</span>
+      <select class="bmap-select" id="bulkAcctVal" style="width:220px;">
+        <option value="">Select account...</option>
+        <optgroup label="Connected bank accounts">
+          <option value="hdfc1234">HDFC Checking (****1234)</option>
+          <option value="icici5678">ICICI Savings (****5678)</option>
+          <option value="sbi9012">SBI Current (****9012)</option>
+        </optgroup>
+        <optgroup label="Other" id="bulkAcctOtherGroup">
+          <option value="card">Corporate Credit Card</option>
+          <option value="cash">Cash / Petty Cash</option>
+          <option value="upi">UPI Transfer</option>
+          <option value="add_instrument">+ Add instrument</option>
+        </optgroup>
+      </select>
+      <button class="bmap-inline-apply" onclick="applyBulkAccount()">Apply to selected</button>
+      <button class="bmap-inline-cancel" onclick="closeInlineRows()">Cancel</button>
+    </div>
+
+    <!-- Bulk set date inline row -->
+    <div class="bmap-inline-row" id="bulkDateRow" onclick="event.stopPropagation()">
+      <span class="bmap-inline-label">Set payment date for all selected bills:</span>
+      <input type="date" class="bmap-input" id="bulkDateVal" style="width:160px;">
+      <button class="bmap-inline-apply" onclick="applyBulkDate()">Apply to selected</button>
+      <button class="bmap-inline-cancel" onclick="closeInlineRows()">Cancel</button>
+    </div>
+
+    <div class="bmap-table-wrap">
+      <table class="bmap-table" id="bmapTable">
+        <thead>
+          <tr>
+            <th class="th-check"><input type="checkbox" id="bmapChkAll" style="width:13px;height:13px;accent-color:#1a2420;" onchange="bmapToggleAll(this)"></th>
+            <th style="min-width:180px;">Vendor</th>
+            <th style="min-width:170px;">Bill ID</th>
+            <th style="min-width:110px;text-align:right;">Bill amount</th>
+            <th style="min-width:110px;text-align:right;">Due amount</th>
+            <th style="min-width:120px;text-align:right;">Amount paid</th>
+            <th style="min-width:175px;">Payment account</th>
+            <th style="min-width:145px;">UTR / Ref no</th>
+            <th style="min-width:130px;">Payment date</th>
+            <th style="min-width:190px;">Payment narration</th>
+            <th class="col-opt col-gst" style="min-width:110px;text-align:right;display:none;">GST amount</th>
+            <th class="col-opt col-cat" style="min-width:130px;display:none;">Mysa category</th>
+            <th class="col-opt col-bu" style="min-width:90px;display:none;">BU</th>
+            <th class="col-opt col-cc" style="min-width:90px;display:none;">CC</th>
+            <th class="col-opt col-dept" style="min-width:130px;display:none;">Department</th>
+            <th style="width:32px;"></th>
+          </tr>
+        </thead>
+        <tbody id="bmapTbody"></tbody>
+      </table>
+    </div>
+
+    <div class="bmap-footer">
+      <div style="display:flex;align-items:center;gap:14px;flex:1;">
+        <label style="display:flex;align-items:center;gap:7px;cursor:pointer;user-select:none;">
+          <input type="checkbox" id="createEntryChk" checked style="width:14px;height:14px;accent-color:#1a2420;">
+          <span style="font-size:12.5px;color:#1a1a1a;font-weight:500;">Create accounting entry for this payment</span>
+        </label>
+        <span id="bmapWarnMsg" style="font-size:11.5px;display:flex;align-items:center;gap:5px;"></span>
+      </div>
+      <div class="bmap-footer-btns">
+        <button class="bmap-cancel-btn" onclick="closeBmapModal()">Cancel</button>
+        <button class="bmap-confirm-btn" onclick="confirmBmap()">Confirm (<span id="bmapConfirmCount">0</span>)</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Bulk set account and date are now inline dropdowns in the toolbar -->
+
+<!-- ── ADD INSTRUMENT PANEL ── -->
+<div class="inst-overlay" id="instOverlay">
+  <div class="inst-panel">
+    <div class="inst-hdr">
+      <span class="inst-title">Add payment instrument</span>
+      <button onclick="closeInstPanel()" style="background:none;border:none;cursor:pointer;color:#aaa;font-size:18px;line-height:1;padding:0;">&#215;</button>
+    </div>
+    <div class="inst-tabs">
+      <div class="inst-tab active" id="instTab_bank" onclick="switchInstTab('bank')">Bank account</div>
+      <div class="inst-tab" id="instTab_card" onclick="switchInstTab('card')">Credit / debit card</div>
+      <div class="inst-tab" id="instTab_other" onclick="switchInstTab('other')">Other</div>
+    </div>
+    <div class="inst-body">
+
+      <!-- Bank account form -->
+      <div class="inst-form active" id="instForm_bank">
+        <div class="inst-field">
+          <div class="inst-label">Last 4 digits of account number <span class="req">*</span></div>
+          <input type="text" class="inst-input short" id="instAcctDigits" maxlength="4" placeholder="e.g. 3190" oninput="updateBankNickname()">
+        </div>
+        <div class="inst-field">
+          <div class="inst-label">IFSC code <span class="req">*</span></div>
+          <input type="text" class="inst-input" id="instIfsc" maxlength="11" placeholder="e.g. YESB0001234" oninput="updateBankNickname()" style="text-transform:uppercase;">
+        </div>
+        <div class="inst-divider"></div>
+        <div class="inst-field" style="margin-bottom:0;">
+          <div class="inst-label">Nickname <span class="inst-auto-badge">Auto-filled</span></div>
+          <div class="inst-nickname-wrap">
+            <input type="text" class="inst-nickname-input" id="instBankNickname" placeholder="Fill fields above to auto-generate">
+          </div>
+        </div>
+      </div>
+
+      <!-- Card form -->
+      <div class="inst-form" id="instForm_card">
+        <div class="inst-field">
+          <div class="inst-label">Last 4 digits of card number <span class="req">*</span></div>
+          <input type="text" class="inst-input short" id="instCardDigits" maxlength="4" placeholder="e.g. 7890" oninput="updateCardNickname()">
+        </div>
+        <div class="inst-field">
+          <div class="inst-label">Bank code <span class="req">*</span></div>
+          <input type="text" class="inst-input" id="instBankCode" maxlength="10" placeholder="e.g. HDFC, ICICI, AXIS" oninput="updateCardNickname()" style="text-transform:uppercase;">
+        </div>
+        <div class="inst-divider"></div>
+        <div class="inst-field" style="margin-bottom:0;">
+          <div class="inst-label">Nickname <span class="inst-auto-badge">Auto-filled</span></div>
+          <div class="inst-nickname-wrap">
+            <input type="text" class="inst-nickname-input" id="instCardNickname" placeholder="Fill fields above to auto-generate">
+          </div>
+        </div>
+      </div>
+
+      <!-- Other form -->
+      <div class="inst-form" id="instForm_other">
+        <div class="inst-field" style="margin-bottom:0;">
+          <div class="inst-label">Label / name <span class="req">*</span></div>
+          <input type="text" class="inst-input" id="instOtherLabel" placeholder="e.g. Petty cash - Mumbai office">
+        </div>
+      </div>
+
+    </div>
+    <div class="inst-footer">
+      <button class="inst-cancel-btn" onclick="closeInstPanel()">Cancel</button>
+      <button class="inst-create-btn" onclick="createInstrument()">Create instrument</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-bd" id="successModal">
+  <div class="success-modal-inner">
+    <div class="success-icon"><svg width="24" height="24" fill="none" viewBox="0 0 24 24"><path d="M5 12l5 5 9-9" stroke="#16a34a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+    <div class="success-title" id="successTitle"></div>
+    <div class="success-sub" id="successSub"></div>
+    <div class="success-meta" id="successMeta"></div>
+    <button class="success-btn" onclick="closeSuccess()">Done</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+var billsData = [
+  {id:1,vendor:'91social Software Pvt Ltd',ini:'9S',bg:'#e0edfc',fg:'#1d4ed8',billId:'BNG/ABMTPL2324000323',msme:true,amount:'&#8377;2,496.00',amtRaw:2496,dueDate:'21 Apr',red:true,status:'In Payment',narration:'AICA Laminates D5386 D5043 Feb',billDate:'10 Feb',flags:['Proforma Bill','Bill Number Changed','Company GSTIN Mismatch','Duplicate Bill'],dueAmt:'&#8377;2,246.40',dueAmtRaw:2246.40,payBy:'21/04/2026',dept:'Central Department',branch:'Head Quarter',cat:'kpop',source:'Platform',erpStatus:'Not synced in ERP',postingDate:'10/02/2026',latestApprovalDate:'07 May',latestApprovalBy:'Devashray Gupta',priority:'Medium',uploadedBy:'QA Admin',uploadedAt:'23 Apr',payDetails:[{det:'AICA Laminates...',utr:'--',tot:'&#8377;180.96',st:'Failed'},{det:'AICA Laminates...',utr:'--',tot:'&#8377;2,065.44',st:'Failed'}],audits:[{action:'Finance reviewed (Lvl 2/2)',by:'Devashray Gupta',time:'07 May 26, 05:12 PM'}]},
+  {id:2,vendor:'50SHADES',ini:'50',bg:'#fef3c7',fg:'#b45309',billId:'1234kk',msme:false,amount:'&#8377;100.00',amtRaw:100,dueDate:'27 Apr',red:false,status:'Ready to pay',narration:'Test',billDate:'07 Apr',flags:[],dueAmt:'&#8377;100.00',dueAmtRaw:100,payBy:'27/04/2026',dept:'Central Department',branch:'Head Quarter',cat:'Others',source:'Platform',erpStatus:'Not synced in ERP',postingDate:'07/04/2026',latestApprovalDate:'20 Apr',latestApprovalBy:'Ayush',priority:'Medium',uploadedBy:'Ayush',uploadedAt:'20 Apr',payDetails:[],audits:[]},
+  {id:3,vendor:'ADONMO PRIVATE LTD',ini:'AP',bg:'#fce7f3',fg:'#be185d',billId:'FY/2024-25/635845678',msme:true,amount:'&#8377;33,630.00',amtRaw:33630,dueDate:'30 May',red:false,status:'In Fin Review',narration:'ADONMO Poster Frames',billDate:'10 Jan',flags:[],dueAmt:'&#8377;33,630.00',dueAmtRaw:33630,payBy:'30/05/2026',dept:'Finance Department',branch:'Head Quarter',cat:'Others',source:'Platform',erpStatus:'Not synced in ERP',postingDate:'10/01/2026',latestApprovalDate:'28 May',latestApprovalBy:'suhairt',priority:'Medium',uploadedBy:'suhairt',uploadedAt:'10 Jan',payDetails:[],audits:[]},
+  {id:4,vendor:'Ace Mobile Manufacturer Pvt Ltd',ini:'AC',bg:'#f0fdf4',fg:'#15803d',billId:'18-Apr-2019',msme:false,amount:'&#8377;10,32,00,000.00',amtRaw:103200000,dueDate:'30 May',red:false,status:'In Approval',narration:'Ace Mobile Smartphone Apr 2019',billDate:'15 Apr',flags:[],dueAmt:'&#8377;10,32,00,000.00',dueAmtRaw:103200000,payBy:'30/05/2026',dept:'Central Department',branch:'Head Quarter',cat:'Others',source:'Platform',erpStatus:'Not synced in ERP',postingDate:'15/04/2019',latestApprovalDate:'15 Apr',latestApprovalBy:'Devashray Gupta',priority:'Medium',uploadedBy:'Devashray Gupta',uploadedAt:'15 Apr',payDetails:[],audits:[]},
+  {id:5,vendor:'50SHADES',ini:'50',bg:'#fef3c7',fg:'#b45309',billId:'May 26 DA 1st Payout',msme:false,amount:'&#8377;11,175.00',amtRaw:11175,dueDate:'30 May',red:false,status:'In Fin Review',narration:'May 26 DA 1st Payout',billDate:'14 May',flags:[],dueAmt:'&#8377;11,175.00',dueAmtRaw:11175,payBy:'30/05/2026',dept:'Central Department',branch:'Head Quarter',cat:'Others',source:'Platform',erpStatus:'Not synced in ERP',postingDate:'14/05/2026',latestApprovalDate:'14 May',latestApprovalBy:'Mayank',priority:'Medium',uploadedBy:'Mayank',uploadedAt:'14 May',payDetails:[],audits:[]},
+  {id:6,vendor:'Bloom Hotels (Unrecognised)',ini:'BL',bg:'#f5f3ff',fg:'#7c3aed',billId:'4614623',msme:false,amount:'&#8377;12,600.00',amtRaw:12600,dueDate:'26 May',red:true,status:'In Approval',narration:'Bloom Hotel Oct25 Booking',billDate:'11 Oct',flags:[],dueAmt:'&#8377;12,600.00',dueAmtRaw:12600,payBy:'26/05/2026',dept:'Central Department',branch:'Head Quarter',cat:'Others',source:'Email',erpStatus:'Not synced in ERP',postingDate:'11/10/2025',latestApprovalDate:'26 May',latestApprovalBy:'qqfinance',priority:'Medium',uploadedBy:'qqfinance',uploadedAt:'11 Oct',payDetails:[],audits:[]},
+  {id:7,vendor:'Nreach Online Services Pvt Ltd',ini:'NR',bg:'#fff7ed',fg:'#c2410c',billId:'XD/0040/072526',msme:false,amount:'&#8377;98,86,540.32',amtRaw:9886540,dueDate:'26 May',red:true,status:'In Approval',narration:'Nreach Metal Pin Lapel Jul25',billDate:'24 Jul',flags:[],dueAmt:'&#8377;98,86,540.32',dueAmtRaw:9886540,payBy:'26/05/2026',dept:'Finance Department',branch:'Head Quarter',cat:'Others',source:'Platform',erpStatus:'Not synced in ERP',postingDate:'24/07/2025',latestApprovalDate:'25 May',latestApprovalBy:'Devashray Gupta',priority:'Medium',uploadedBy:'Devashray Gupta',uploadedAt:'24 Jul',payDetails:[],audits:[]},
+  {id:8,vendor:'RONCH POLYMERS PRIVATE LTD',ini:'RO',bg:'#ecfdf5',fg:'#065f46',billId:'64046/26-27/U834',msme:false,amount:'&#8377;85,354.00',amtRaw:85354,dueDate:'04 May',red:true,status:'In Fin Review',narration:'ACC-PINV-2026-00693',billDate:'04 Apr',flags:[],dueAmt:'&#8377;85,354.00',dueAmtRaw:85354,payBy:'04/05/2026',dept:'Finance Department',branch:'Head Quarter',cat:'Others',source:'Platform',erpStatus:'Not synced in ERP',postingDate:'04/04/2026',latestApprovalDate:'04 Apr',latestApprovalBy:'anandhu',priority:'Medium',uploadedBy:'anandhu',uploadedAt:'04 Apr',payDetails:[],audits:[]},
+  {id:9,vendor:'91social Software Pvt Ltd',ini:'9S',bg:'#e0edfc',fg:'#1d4ed8',billId:'NGP/7944/23-24',msme:true,amount:'&#8377;1,06,666.18',amtRaw:106666,dueDate:'29 Nov',red:true,status:'Partially Paid',narration:'HDHMR Plywood Nandi Glass Feb',billDate:'26 Feb',flags:[],dueAmt:'&#8377;1,06,666.18',dueAmtRaw:106666,payBy:'29/11/2025',dept:'Central Department',branch:'Head Quarter',cat:'Others',source:'Platform',erpStatus:'Not synced in ERP',postingDate:'26/02/2026',latestApprovalDate:'25 Nov',latestApprovalBy:'QA Admin',priority:'Medium',uploadedBy:'suhail',uploadedAt:'25 Nov',payDetails:[],audits:[]},
+  {id:10,vendor:'91social Software Pvt Ltd',ini:'9S',bg:'#e0edfc',fg:'#1d4ed8',billId:'YUV/25-26/0723',msme:true,amount:'&#8377;1,31,486.00',amtRaw:131486,dueDate:'29 Nov',red:true,status:'In Payment',narration:'YUVIGNESH INDUSTRIES DRINKPRIME',billDate:'27 Oct',flags:[],dueAmt:'&#8377;1,31,486.00',dueAmtRaw:131486,payBy:'29/11/2025',dept:'Central Department',branch:'Head Quarter',cat:'Others',source:'Platform',erpStatus:'Not synced in ERP',postingDate:'27/10/2025',latestApprovalDate:'12 Jan',latestApprovalBy:'Devvvnnn',priority:'Medium',uploadedBy:'Gaurav',uploadedAt:'20 Nov',payDetails:[],audits:[]},
+  {id:11,vendor:'Gujarat Freight Tools (Unrecognised)',ini:'GF',bg:'#f0f9ff',fg:'#0369a1',billId:'201',msme:false,adv:true,amount:'&#8377;3,988.00',amtRaw:3988,dueDate:'26 May',red:true,status:'In Fin Review',narration:'Gujarat Freight Tools Mar20',billDate:'12 Mar',flags:[],dueAmt:'&#8377;3,988.00',dueAmtRaw:3988,payBy:'26/05/2026',dept:'Central Department',branch:'Head Quarter',cat:'Others',source:'Platform',erpStatus:'Not synced in ERP',postingDate:'12/03/2020',latestApprovalDate:'12 Mar',latestApprovalBy:'Devashray Gupta',priority:'Medium',uploadedBy:'Devashray Gupta',uploadedAt:'12 Mar',payDetails:[],audits:[]},
+  {id:12,vendor:'A R B ENTERPRISES-BLR',ini:'AR',bg:'#fdf4ff',fg:'#7e22ce',billId:'`12345',msme:false,amount:'&#8377;5,524.00',amtRaw:5524,dueDate:'27 May',red:false,status:'Ready to pay',narration:'Edge CSB Bank Card payment',billDate:'20 Jun',flags:[],dueAmt:'&#8377;5,524.00',dueAmtRaw:5524,payBy:'27/05/2026',dept:'Central Department',branch:'Head Quarter',cat:'Others',source:'Platform',erpStatus:'Not synced in ERP',postingDate:'20/06/2025',latestApprovalDate:'23 May',latestApprovalBy:'Swathi',priority:'Medium',uploadedBy:'Swathi',uploadedAt:'27 May',payDetails:[],audits:[]},
+  {id:13,vendor:'50SHADES',ini:'50',bg:'#fef3c7',fg:'#b45309',billId:'234567890',msme:false,amount:'&#8377;142.00',amtRaw:142,dueDate:'09 Jun',red:false,status:'Ready to pay',narration:'ITD Tax Payment BLRM46845B',billDate:'25 May',flags:[],dueAmt:'&#8377;142.00',dueAmtRaw:142,payBy:'09/06/2026',dept:'Central Department',branch:'Head Quarter',cat:'MySACAT',source:'Platform',erpStatus:'Not synced in ERP',postingDate:'25/05/2026',latestApprovalDate:'25 May',latestApprovalBy:'QA Admin',priority:'Medium',uploadedBy:'QA Admin',uploadedAt:'25 May',payDetails:[],audits:[]},
+  {id:14,vendor:'ITD (Unrecognised)',ini:'IT',bg:'#f1f5f9',fg:'#475569',billId:'123456789',msme:false,amount:'&#8377;142.00',amtRaw:142,dueDate:'09 Jun',red:false,status:'In Fin Review',narration:'ITD Tax Payment BLRM46845B',billDate:'25 May',flags:[],dueAmt:'&#8377;142.00',dueAmtRaw:142,payBy:'09/06/2026',dept:'Central Department',branch:'Head Quarter',cat:'Others',source:'Platform',erpStatus:'Not synced in ERP',postingDate:'25/05/2026',latestApprovalDate:'25 May',latestApprovalBy:'QA Admin',priority:'Medium',uploadedBy:'QA Admin',uploadedAt:'25 May',payDetails:[],audits:[]},
+  {id:15,vendor:'Sandeep - 1985 - PUNE DA',ini:'SA',bg:'#f0fdf4',fg:'#15803d',billId:'May 26 DA 1st Payout',msme:false,amount:'&#8377;21,410.00',amtRaw:21410,dueDate:'30 May',red:false,status:'In Fin Review',narration:'May 26 DA 1st Payout',billDate:'14 May',flags:[],dueAmt:'&#8377;21,410.00',dueAmtRaw:21410,payBy:'30/05/2026',dept:'Central Department',branch:'Head Quarter',cat:'Others',source:'Platform',erpStatus:'Not synced in ERP',postingDate:'14/05/2026',latestApprovalDate:'14 May',latestApprovalBy:'Mayank',priority:'Medium',uploadedBy:'Mayank',uploadedAt:'14 May',payDetails:[],audits:[]},
+];
+
+var selected = new Set();
+var activePanelId = null;
+var modalBillId = null;
+
+function canMarkPaid(b) { return b.status === 'Ready to pay' || b.status === 'Partially Paid'; }
+
+function statusPill(s) {
+  var m = {'In Payment':'pill-inpayment','Ready to pay':'pill-readytopay','In Fin Review':'pill-infinreview','In Approval':'pill-inapproval','Partially Paid':'pill-partiallypaid','Paid':'pill-paid'};
+  return '<span class="pill '+(m[s]||'pill-infinreview')+'">'+s+'</span>';
+}
+
+function docIcon() {
+  return '<div class="doc-ic"><svg width="12" height="12" fill="none" viewBox="0 0 12 12"><rect x="2" y="1" width="8" height="10" rx="1" stroke="#16a34a" stroke-width="1.1"/><path d="M4 4h4M4 6h4M4 8h2" stroke="#16a34a" stroke-width="1" stroke-linecap="round"/></svg></div>';
+}
+
+function renderTable() {
+  var html = '';
+  for (var i = 0; i < billsData.length; i++) {
+    var b = billsData[i];
+    var chk = selected.has(b.id) ? 'checked' : '';
+    var active = activePanelId === b.id ? 'active-row' : '';
+    html += '<tr class="'+active+'" onclick="openPanel('+b.id+')">';
+    html += '<td class="col-check" onclick="event.stopPropagation()">';
+    html += '<input type="checkbox" style="width:13px;height:13px;" '+chk+' onchange="toggleRow('+b.id+',this)">';
+    html += '</td>';
+    // Vendor
+    html += '<td><div class="vendor-cell"><div class="av-sm" style="background:'+b.bg+';color:'+b.fg+';">'+b.ini+'</div><span class="vendor-name">'+b.vendor+'</span>'+(b.msme?'<span class="msme-tag">MSME</span>':'')+'</div></td>';
+    // ID
+    html += '<td style="color:#555;">'+b.billId+(b.flags.length?'<span class="warn-icon"> &#9888;</span>':'')+(b.adv?'<span style="background:#f1f5f9;color:#475569;font-size:10px;font-weight:600;padding:1px 5px;border-radius:3px;margin-left:5px;">ADV</span>':'')+'</td>';
+    // Doc
+    html += '<td>'+docIcon()+'</td>';
+    // Bill Amount
+    html += '<td style="text-align:right;font-weight:500;color:#1a1a1a;">'+b.amount+'</td>';
+    // Due Date
+    html += '<td style="color:'+(b.red?'#dc2626':'#888')+';">'+b.dueDate+'</td>';
+    // Status
+    html += '<td>'+statusPill(b.status)+'</td>';
+    // Bill Narration
+    html += '<td style="color:#555;max-width:220px;overflow:hidden;text-overflow:ellipsis;">'+b.narration+'</td>';
+    // Bill Date
+    html += '<td style="color:#888;">'+b.billDate+'</td>';
+    // Uploaded By
+    html += '<td style="color:#555;">'+(b.uploadedBy||'QA Admin')+'</td>';
+    // Payment Priority
+    html += '<td style="color:#555;">'+(b.priority||'Medium')+'</td>';
+    // Comments
+    html += '<td style="color:#888;">1</td>';
+    // Mysa Category
+    html += '<td style="color:#555;">'+b.cat+'</td>';
+    // Type
+    html += '<td style="color:#888;">Bill</td>';
+    // Branch
+    html += '<td style="color:#555;">'+b.branch+'</td>';
+    // Department
+    html += '<td style="color:#555;">'+b.dept+'</td>';
+    // BU
+    html += '<td style="color:#888;">&#8212;</td>';
+    // CC
+    html += '<td style="color:#888;">&#8212;</td>';
+    // Uploaded At
+    html += '<td style="color:#888;">'+(b.uploadedAt||'25 May')+'</td>';
+    // Bill Source
+    html += '<td style="color:#555;">'+b.source+'</td>';
+    // Due Amount
+    html += '<td style="text-align:right;font-weight:500;color:#1a1a1a;">'+b.dueAmt+'</td>';
+    // Posting Date
+    html += '<td style="color:#888;">'+(b.postingDate||'&#8212;')+'</td>';
+    // PO Number
+    html += '<td style="color:#888;">&#8212;</td>';
+    // Latest Approval Date
+    html += '<td style="color:#888;">'+(b.latestApprovalDate||'25 May')+'</td>';
+    // Latest Approval By
+    html += '<td style="color:#555;">'+(b.latestApprovalBy||'Devashray Gupta')+'</td>';
+    // Pay By Date
+    html += '<td style="color:#888;">'+b.payBy+'</td>';
+    // Got Amount
+    html += '<td style="text-align:right;color:#888;">&#8377;0.00</td>';
+    // TDS/TCS Details
+    html += '<td style="color:#888;">TDS &#8722; New 3317...</td>';
+    // Sub Total
+    html += '<td style="text-align:right;font-weight:500;color:#1a1a1a;">'+b.amount+'</td>';
+    html += '</tr>';
+  }
+  document.getElementById('billsTbody').innerHTML = html;
+}
+
+function toggleRow(id, el) {
+  if (el.checked) selected.add(id); else selected.delete(id);
+  updateBulkBar();
+  renderTable();
+}
+function toggleAll(el) {
+  if (el.checked) billsData.forEach(function(b){ selected.add(b.id); });
+  else selected.clear();
+  updateBulkBar(); renderTable();
+}
+function clearSelection() { selected.clear(); updateBulkBar(); renderTable(); }
+function updateBulkBar() {
+  var bar = document.getElementById('bulkBar');
+  if (selected.size > 0) {
+    bar.classList.add('show');
+    document.getElementById('bulkCount').textContent = selected.size;
+    var selBills = billsData.filter(function(b){ return selected.has(b.id); });
+    var totalAmt = selBills.reduce(function(s,b){ return s+b.amtRaw; }, 0);
+    var totalDue = selBills.reduce(function(s,b){ return s+b.dueAmtRaw; }, 0);
+    document.getElementById('bulkTotalAmt').innerHTML = '&#8377;' + totalAmt.toLocaleString('en-IN',{minimumFractionDigits:2,maximumFractionDigits:2});
+    document.getElementById('bulkTotalDue').innerHTML = '&#8377;' + totalDue.toLocaleString('en-IN',{minimumFractionDigits:2,maximumFractionDigits:2});
+  } else {
+    bar.classList.remove('show');
+  }
+}
+
+function openPanel(id) {
+  activePanelId = id;
+  var b = billsData.find(function(x){ return x.id===id; });
+  document.getElementById('spAv').textContent = b.ini;
+  document.getElementById('spAv').style.background = b.bg;
+  document.getElementById('spAv').style.color = b.fg;
+  document.getElementById('spName').textContent = b.vendor;
+  document.getElementById('spId').textContent = b.billId;
+  document.getElementById('spMsme').innerHTML = b.msme ? '<span class="msme-tag">MSME</span>' : '';
+  document.getElementById('spFlags').innerHTML = b.flags.map(function(f){ return '<span class="sp-flag orange">&#9873; '+f+'</span>'; }).join('');
+  // Footer CTA rules:
+  // Ready to pay / Partially Paid  → More Actions (Edit+Pay, Mark as Paid, Reject, Set on Hold) + Quick Pay
+  // Paid / In Payment              → no CTAs (just Close)
+  // All others                     → More Actions only, with only Set on Hold inside
+  var status = b.status;
+  var showQuickPay = (status === 'Ready to pay' || status === 'Partially Paid');
+  var showMoreActions = (status !== 'Paid' && status !== 'In Payment');
+  document.getElementById('spQuickPayBtn').style.display = showQuickPay ? 'flex' : 'none';
+  document.getElementById('spMoreWrap').style.display = showMoreActions ? 'block' : 'none';
+  // Items inside More Actions
+  var isEligible = showQuickPay; // same set
+  document.getElementById('spMenuEditPay').style.display = isEligible ? 'block' : 'none';
+  document.getElementById('spMenuMarkPaid').style.display = isEligible ? 'block' : 'none';
+  document.getElementById('spMenuReject').style.display = isEligible ? 'block' : 'none';
+  document.getElementById('spMenuDivider').style.display = isEligible ? 'block' : 'none';
+  renderSpDetails(b);
+  document.getElementById('sidePanel').classList.add('open');
+  document.getElementById('sideOverlay').classList.add('open');
+  renderTable();
+}
+
+function renderSpDetails(b) {
+  var isPaid = b.status === 'Paid';
+  // Timeline stepper — last label "Paid" when paid, else "Payment"
+  var tlSteps = ['Uploaded','Approved(1)','Reviewed(2)', isPaid ? 'Paid' : 'Payment'];
+  var connDone = [true, true, isPaid ? true : false];
+  var tlHTML = '<div class="hl-tl">';
+  for (var i=0;i<tlSteps.length;i++) {
+    var isDone = (i < 3) || isPaid;
+    var isCurr = !isDone && (i === 3) && canMarkPaid(b);
+    var dotCls = isDone ? 'done' : (isCurr ? 'curr' : '');
+    var inner = isDone ? '<svg width="9" height="9" fill="none" viewBox="0 0 9 9"><path d="M1.5 4.5l2.5 2.5 3.5-3.5" stroke="#fff" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>' : (isCurr ? '<div style="width:7px;height:7px;border-radius:50%;background:#2563eb;"></div>' : '');
+    var lblCls = isDone ? 'done' : (isCurr ? 'curr' : '');
+    tlHTML += '<div class="hl-step"><div class="hl-dot '+dotCls+'">'+inner+'</div><div class="hl-lbl '+lblCls+'">'+tlSteps[i]+'</div></div>';
+    if (i < tlSteps.length-1) tlHTML += '<div class="hl-conn '+(connDone[i]?'done':'pend')+'"></div>';
+  }
+  tlHTML += '</div>';
+
+  // Timeline audit events
+  var allEvents = [];
+  if (isPaid && b._paymentRecord) {
+    allEvents.push({ label: 'Paid', by: 'By You', time: 'Today', dot:'green', bold:true });
+  }
+  if (b.audits && b.audits.length) {
+    b.audits.forEach(function(a){ allEvents.push({ label: a.action, by: 'By '+a.by, time: a.time, dot:'green', bold:false }); });
+  }
+  if (!isPaid && allEvents.length === 0) {
+    allEvents.push({ label: isPaid ? 'Paid' : (canMarkPaid(b) ? 'Payment creation pending' : 'Finance reviewed (Lvl 1/1)'), by:'', time:'', dot: canMarkPaid(b) ? 'blue' : 'green', bold:false });
+  }
+  // Always add an uploaded event
+  allEvents.push({ label: 'Uploaded by '+b.uploadedBy, by:'', time: b.uploadedAt+' 26', dot:'green', bold:false });
+
+  var showAll = b._showAllAudits || false;
+  var visibleEvents = showAll ? allEvents : allEvents.slice(0, 2);
+  var auditHTML = visibleEvents.map(function(a){
+    var dotColor = a.dot === 'green' ? '#16a34a' : '#2563eb';
+    var innerSvg = a.dot === 'green' ? '<svg width="9" height="9" fill="none" viewBox="0 0 9 9"><path d="M1.5 4.5l2.5 2.5 3.5-3.5" stroke="#fff" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>' : '<div style="width:7px;height:7px;border-radius:50%;background:#fff;"></div>';
+    return '<div class="sp-tl-event"><div class="tl-dot-sm" style="background:'+dotColor+';">'+innerSvg+'</div><div><div class="tl-ev-action'+(a.bold?' style="font-weight:600;"':'')+'">'+a.label+'</div>'+(a.by||a.time ? '<div class="tl-ev-meta">'+(a.by?a.by:'')+(a.by&&a.time?' · ':' ')+(a.time||'')+'</div>':'')+'</div></div>';
+  }).join('');
+  var toggleLabel = allEvents.length > 2 ? (showAll ? '<div class="show-all-link" onclick="toggleAuditView('+b.id+')">Show less &#8593;</div>' : '<div class="show-all-link" onclick="toggleAuditView('+b.id+')">Show all &#8595;</div>') : '';
+
+  // Payment summary — for paid bills show success payment record
+  var paySumHTML = '';
+  if (isPaid && b._paymentRecord) {
+    var pr = b._paymentRecord;
+    paySumHTML = '<div class="sp-sec-title">Payment summary (1)</div><div class="sp-pay-sum"><div class="sp-pay-sum-hdr"><span>Payment details</span><span>UTR/RRN</span><span>Total paid</span><span>Status</span></div>';
+    paySumHTML += '<div class="sp-pay-sum-row"><span style="color:#2563eb;cursor:pointer;">'+b.narration.slice(0,18)+'... &#8599;</span><span style="color:#555;font-family:monospace;font-size:11px;">'+pr.utr+'</span><span style="font-weight:500;">'+b.amount+'</span><span><span class="sp-pay-status-success">&#10003; Success</span></span></div>';
+    paySumHTML += '</div><div class="sp-pay-totals"><div class="sp-pay-tot-row"><span style="color:#888;">Net payable (Post TDS)</span><span>'+b.dueAmt+'</span></div><div class="sp-pay-tot-row"><span style="color:#888;">Total advance</span><span>&#8722;&#8377;0.00</span></div><div class="sp-pay-tot-row"><span style="color:#888;">Total paid</span><span style="color:#15803d;">&#8722;'+b.amount+'</span></div><div class="sp-pay-tot-row"><span style="color:#888;">Payment created</span><span>&#8722;&#8377;0.00</span></div><div class="sp-pay-tot-row final"><span>Due amount</span><span style="color:#15803d;">&#8377;0.00</span></div></div>';
+  } else if (b.payDetails && b.payDetails.length) {
+    paySumHTML = '<div class="sp-sec-title">Payment summary ('+b.payDetails.length+')</div><div class="sp-pay-sum"><div class="sp-pay-sum-hdr"><span>Payment details</span><span>UTR/RRN</span><span>Total paid</span><span>Status</span></div>';
+    paySumHTML += b.payDetails.map(function(p){ return '<div class="sp-pay-sum-row"><span style="color:#2563eb;cursor:pointer;">'+p.det+' &#8599;</span><span style="color:#888;">'+p.utr+'</span><span style="font-weight:500;">'+p.tot+'</span><span><span class="sp-pay-status-success">&#10003; Success</span></span></div>'; }).join('');
+    paySumHTML += '</div><div class="sp-pay-totals"><div class="sp-pay-tot-row"><span style="color:#888;">Net payable (Post TDS)</span><span>'+b.dueAmt+'</span></div><div class="sp-pay-tot-row"><span style="color:#888;">Total advance</span><span>&#8722;&#8377;0.00</span></div><div class="sp-pay-tot-row"><span style="color:#888;">Total paid</span><span>&#8722;&#8377;0.00</span></div><div class="sp-pay-tot-row final"><span>Due amount</span><span>'+b.dueAmt+'</span></div></div>';
+  }
+
+  var stMap = {'In Payment':'pill-inpayment','Ready to pay':'pill-readytopay','In Fin Review':'pill-infinreview','In Approval':'pill-inapproval','Partially Paid':'pill-partiallypaid','Paid':'pill-paid'};
+  var erpBadgeStyle = isPaid ? 'background:#f0fdf4;border:1px solid #86efac;color:#15803d;' : 'background:#fef9f0;border:1px solid #fde68a;color:#92400e;';
+  var erpLabel = isPaid ? 'Synced in ERP' : b.erpStatus;
+  var acctStatusHTML = isPaid ? '<span class="acct-status success">&#10003; Success</span>' : '<span class="acct-status failed">Failed</span>';
+
+  // Mark-as-paid banner only for eligible non-paid bills
+  var markBanner = (canMarkPaid(b) && !isPaid) ? '<div class="mark-ready-banner"><div style="font-size:12px;color:#15803d;font-weight:500;">This bill is eligible to be marked as paid.</div><button class="banner-mark-btn" onclick="openModalFromPanel()">Mark as paid</button></div>' : '';
+
+  document.getElementById('spBody').innerHTML = markBanner +
+    '<div class="sp-tl-card">'+tlHTML+'<div style="margin-top:12px;">'+auditHTML+toggleLabel+'</div></div>' +
+    '<div class="sp-sec-title">Summary</div>' +
+    '<div class="sp-summary-card">' +
+      '<div class="sp-status-row"><span class="pill '+(stMap[b.status]||'pill-infinreview')+'">'+b.status+'</span><div style="display:flex;align-items:center;gap:8px;"><span style="font-size:10px;font-weight:600;padding:2px 7px;border-radius:4px;'+erpBadgeStyle+'">'+erpLabel+'</span><span style="font-size:11px;color:#888;">Source: '+b.source+'</span></div></div>' +
+      '<div class="sp-amounts"><div><div class="sp-amt-label">Bill Amount</div><div class="sp-amt-val">'+b.amount+'</div></div><div><div class="sp-amt-label">Net Amount (Post TDS)</div><div class="sp-amt-val">'+b.dueAmt+'</div></div></div>' +
+      '<div class="sp-grid"><div><div class="sp-fl">Bill narration</div><div class="sp-fv">'+b.narration+'</div></div><div><div class="sp-fl">Bill number</div><div class="sp-fv">'+b.billId+'</div></div><div><div class="sp-fl">Mysa category</div><div class="sp-fv">'+b.cat+'</div></div><div><div class="sp-fl">Bill date</div><div class="sp-fv">'+b.billDate+'</div></div><div><div class="sp-fl">Due date</div><div class="sp-fv" style="color:'+(b.red?'#dc2626':'inherit')+';">'+b.dueDate+'</div></div><div><div class="sp-fl">Pay by date</div><div class="sp-fv">'+b.payBy+'</div></div><div><div class="sp-fl">Bill type</div><div class="sp-fv">Bill</div></div><div><div class="sp-fl">Payment priority</div><div class="sp-fv">'+(b.priority||'Medium')+'</div></div><div><div class="sp-fl">Location/Branch</div><div class="sp-fv">'+b.branch+'</div></div><div><div class="sp-fl">PO number</div><div class="sp-fv">&#8212;</div></div><div><div class="sp-fl">Department</div><div class="sp-fv">'+b.dept+'</div></div><div><div class="sp-fl">CC (abdef)</div><div class="sp-fv">&#8212;</div></div><div><div class="sp-fl">BU (abadf)</div><div class="sp-fv">&#8212;</div></div><div><div class="sp-fl">Report name</div><div class="sp-fv">&#8212;</div></div></div>' +
+    '</div>' +
+    '<div class="sp-sec-title" style="margin-top:16px;">Vendor details</div>' +
+    '<div class="sp-vendor-card"><div class="sp-vendor-grid"><div><div class="sp-fl">Vendor name</div><div class="sp-fv">'+b.vendor+(b.msme?'<span class="msme-tag" style="margin-left:5px;">MSME</span>':'')+'</div></div><div><div class="sp-fl">Bank details</div><div class="sp-fv" style="color:#555;">HDFC A/C xx5467 <svg width="12" height="12" fill="none" viewBox="0 0 12 12" style="vertical-align:middle;"><circle cx="6" cy="6" r="5" fill="#16a34a"/><path d="M4 6l1.5 1.5 2.5-2.5" stroke="#fff" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div></div><div><div class="sp-fl">Vendor GST/PAN</div><div class="sp-fv">29AAFCV4577P1Z8</div></div><div><div class="sp-fl">State of supply</div><div class="sp-fv">Karnataka</div></div></div></div>' +
+    '<div class="sp-sec-title" style="margin-top:16px;">Accounting details <a href="#" style="font-size:11px;color:#2563eb;font-weight:400;margin-left:6px;">View in Accounting &#8599;</a></div>' +
+    '<div class="sp-acct-card"><div class="sp-acct-grid"><div><div class="sp-fl">ERP details added by</div><div class="sp-fv">Devashray Gupta</div></div><div><div class="sp-fl">Synced by</div><div class="sp-fv" style="color:#888;">&#8212;</div></div><div><div class="sp-fl">COA / Ledger</div><div class="sp-fv" style="color:#888;">N/A</div></div><div><div class="sp-fl">ERP vendor</div><div class="sp-fv">'+b.vendor+'</div></div><div><div class="sp-fl">Paid through</div><div class="sp-fv" style="color:#888;">'+(b._paymentRecord ? b._paymentRecord.account : 'N/A')+'</div></div><div><div class="sp-fl">Status</div><div class="sp-fv">'+acctStatusHTML+'</div></div></div></div>' +
+    paySumHTML +
+    '<div class="sp-sec-title" style="margin-top:16px;">Bill details</div>' +
+    '<div style="display:flex;gap:6px;margin-bottom:8px;"><button style="background:#fff;border:1px solid #e0e0e0;border-radius:6px;padding:5px 12px;font-size:12px;font-weight:500;color:#333;cursor:pointer;font-family:inherit;">Calculations</button><button style="background:#fff;border:1px solid #e0e0e0;border-radius:6px;padding:5px 12px;font-size:12px;color:#888;cursor:pointer;font-family:inherit;">Categories <span style="background:#eff6ff;color:#1d4ed8;font-size:9px;font-weight:600;padding:1px 5px;border-radius:3px;margin-left:3px;">New</span></button></div>' +
+    '<div class="bill-det-card"><div class="bill-det-hdr"><span>Item detail</span><span>QTY</span><span>Rate</span><span>GST %</span><span>Amt excl. GST</span></div><div class="bill-det-row"><span>D5386 0.8mm...</span><span>2</span><span>&#8377;684.00</span><span style="color:#888;">IGST 12%</span><span>&#8377;1,368.00</span></div><div class="bill-det-row"><span>D5043 0.8M S...</span><span>1</span><span>&#8377;684.00</span><span style="color:#888;">IGST 5%</span><span>&#8377;684.00</span></div><div class="bill-det-row"><span>D5055 0.8MM S...</span><span>1</span><span>&#8377;684.00</span><span style="color:#888;">IGST 0%</span><span>&#8377;684.00</span></div></div>';
+}
+
+
+function closePanel() {
+  activePanelId = null;
+  document.getElementById('sidePanel').classList.remove('open');
+  document.getElementById('sideOverlay').classList.remove('open');
+  renderTable();
+}
+
+function spTab(tab, el) {
+  document.querySelectorAll('.sp-tab').forEach(function(t){ t.classList.remove('active'); });
+  el.classList.add('active');
+  if (tab === 'comments') {
+    document.getElementById('spBody').innerHTML = '<div class="sp-sec-title">Documents</div><div style="border:1px dashed #e0e0e0;border-radius:8px;padding:24px;text-align:center;margin-bottom:16px;"><div style="font-size:13px;color:#888;margin-bottom:4px;">Upload supporting documents</div><div style="font-size:11px;color:#bbb;">e.g. receipts, contracts etc.</div><button style="margin-top:10px;background:none;border:1px solid #e0e0e0;border-radius:6px;padding:5px 14px;font-size:12px;color:#555;cursor:pointer;">+ Upload Document</button></div><div class="sp-sec-title">Comments (1)</div><div style="margin-bottom:12px;"><input type="text" placeholder="Enter your comment" style="width:100%;border:1px solid #e0e0e0;border-radius:7px;padding:8px 11px;font-size:12.5px;font-family:inherit;outline:none;"></div><div style="display:flex;align-items:flex-start;gap:8px;padding:10px;background:#fafafa;border-radius:8px;"><div style="width:26px;height:26px;border-radius:50%;background:#eff6ff;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:#1d4ed8;flex-shrink:0;">QA</div><div><div style="display:flex;align-items:center;gap:6px;margin-bottom:3px;"><span style="font-size:12px;font-weight:500;">QA_Admin</span><span style="font-size:11px;color:#aaa;">23 Apr 26, 01:19 PM</span></div><div style="font-size:12px;color:#555;">[System Generated] Invoice submitted by QA_Admin on behalf of QA_Admin</div></div></div>';
+  } else if (activePanelId) {
+    var b = billsData.find(function(x){ return x.id===activePanelId; });
+    renderSpDetails(b);
+  }
+}
+
+function openModal(id) {
+  modalBillId = id;
+  var b = billsData.find(function(x){ return x.id===id; });
+  var otherBills = billsData.filter(function(x){ return x.vendor===b.vendor && x.id!==id && canMarkPaid(x); });
+
+  var otherBillsHTML = '';
+  if (otherBills.length) {
+    otherBillsHTML = '<div class="other-bills-box"><div class="ob-title"><svg width="11" height="11" fill="none" viewBox="0 0 11 11"><circle cx="5.5" cy="5.5" r="4.5" stroke="#c2410c" stroke-width="1"/><path d="M5.5 3.5v3" stroke="#c2410c" stroke-width="1" stroke-linecap="round"/><circle cx="5.5" cy="8" r="0.4" fill="#c2410c"/></svg>'+otherBills.length+' other unpaid bill'+(otherBills.length>1?'s':'')+' from this vendor</div>';
+    otherBills.slice(0,3).forEach(function(ob){
+      otherBillsHTML += '<div class="ob-item"><div><div class="ob-id">'+ob.billId+'</div><div class="ob-due">Due '+ob.dueDate+'</div></div><div class="ob-amt">'+ob.amount+'</div></div>';
+    });
+    otherBillsHTML += '</div>';
+  }
+
+  document.getElementById('mapSub').textContent = 'Recording external payment for ' + b.vendor;
+  document.getElementById('mapBody').innerHTML =
+    '<div class="bill-summary-box"><div class="bill-sum-label">Bill details</div><div class="bill-sum-grid"><div class="bsk">Invoice ID</div><div class="bsv">'+b.billId+'</div><div class="bsk">Vendor</div><div class="bsv">'+b.vendor+'</div><div class="bsk">Amount</div><div class="bsv green">'+b.amount+'</div><div class="bsk">Due date</div><div class="bsv">'+b.dueDate+'</div></div></div>' +
+    otherBillsHTML +
+    '<div class="map-divider"></div><div class="map-sec-title">Payment details</div>' +
+    '<div class="form-row-2"><div class="form-group"><label class="form-label">Payment date <span class="req">*</span></label><input type="date" class="form-input" id="mapDate" value="2026-05-25"></div><div class="form-group"><label class="form-label">Payment amount <span class="req">*</span></label><input type="text" class="form-input" id="mapAmount" value="'+b.amount+'"></div></div>' +
+    '<div class="form-group"><label class="form-label">Payment account <span class="req">*</span></label><select class="form-input" id="mapAccount"><option value="">Select payment account</option><optgroup label="Connected bank accounts"><option value="hdfc1234">HDFC Checking Account (****1234)</option><option value="icici5678">ICICI Savings (****5678)</option><option value="sbi9012">SBI Current Account (****9012)</option></optgroup><optgroup label="Other payment methods"><option value="card">Corporate Credit Card</option><option value="cash">Cash / Petty Cash</option><option value="upi">UPI Transfer</option><option value="other">Other / External account</option></optgroup></select></div>' +
+    '<div class="form-group"><label class="form-label">UTR / Reference number <span class="req">*</span></label><input type="text" class="form-input" id="mapUTR" placeholder="e.g., 2026051523456789"></div>' +
+    '<div class="form-row-2"><div class="form-group"><label class="form-label">Category <span class="opt">(optional)</span></label><select class="form-input" id="mapCat"><option>'+b.cat+'</option><option>Software &amp; SaaS</option><option>Hardware &amp; Equipment</option><option>Utilities</option><option>Others</option></select></div><div class="form-group"><label class="form-label">Department <span class="opt">(optional)</span></label><select class="form-input" id="mapDept"><option>'+b.dept+'</option><option>Engineering</option><option>Finance</option><option>Operations</option></select></div></div>' +
+    '<div class="form-group"><label class="form-label">Payment narration <span class="opt">(optional)</span></label><input type="text" class="form-input" id="mapNarration" placeholder="e.g., Wire transfer - '+b.narration+'"></div>' +
+    '<div class="warn-box"><svg width="15" height="15" fill="none" viewBox="0 0 15 15" style="flex-shrink:0;margin-top:1px;"><path d="M7.5 2L1 13h13L7.5 2z" stroke="#d97706" stroke-width="1.2" stroke-linejoin="round"/><path d="M7.5 6v3.5" stroke="#d97706" stroke-width="1.2" stroke-linecap="round"/><circle cx="7.5" cy="11" r="0.5" fill="#d97706"/></svg><div><strong>Once marked as paid, this bill cannot be reverted to unpaid.</strong><br>A payment record will be created and an accounting entry will be generated automatically.</div></div>';
+
+  document.getElementById('mapModal').classList.add('open');
+}
+
+
+function closeMapModal() { document.getElementById('mapModal').classList.remove('open'); modalBillId = null; }
+
+function confirmMarkAsPaid() {
+  var account = document.getElementById('mapAccount').value;
+  var utr = document.getElementById('mapUTR').value;
+  if (!account) { showToast('Please select a payment account'); return; }
+  if (!utr.trim()) { showToast('Please enter UTR / Reference number'); return; }
+  var b = billsData.find(function(x){ return x.id===modalBillId; });
+  var payId = 'PAY-2026-' + Math.floor(Math.random()*9000+1000);
+  var accLabel = {'hdfc1234':'HDFC Checking (****1234)','icici5678':'ICICI Savings (****5678)','sbi9012':'SBI Current (****9012)','card':'Corporate Credit Card','cash':'Cash / Petty Cash','upi':'UPI Transfer','other':'External Account'}[account]||account;
+  b.status = 'Paid'; b.erpStatus = 'Synced to ERP';
+  b._paymentRecord = { payId: payId, account: accLabel, utr: utr };
+  b.audits.push({ action:'Marked as paid', by:'You', time: new Date().toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'2-digit'})+', now' });
+  closeMapModal();
+  document.getElementById('successTitle').textContent = 'Payment recorded successfully';
+  document.getElementById('successSub').textContent = 'Bill has been marked as paid. Payment entry and accounting record created automatically.';
+  document.getElementById('successMeta').innerHTML = '<div class="smr"><span class="smk">Payment ID</span><span class="smv" style="font-family:monospace;">'+payId+'</span></div><div class="smr"><span class="smk">Bill</span><span class="smv">'+b.billId+'</span></div><div class="smr"><span class="smk">Vendor</span><span class="smv">'+b.vendor+'</span></div><div class="smr"><span class="smk">Amount paid</span><span class="smv" style="color:#16a34a;">'+b.amount+'</span></div><div class="smr"><span class="smk">Account</span><span class="smv">'+accLabel+'</span></div><div class="smr"><span class="smk">UTR</span><span class="smv" style="font-family:monospace;">'+utr+'</span></div><div class="smr"><span class="smk">Accounting entry</span><span class="smv" style="color:#16a34a;">&#10003; Created</span></div>';
+  document.getElementById('successModal').classList.add('open');
+  renderTable();
+  if (currentView === 'rtp') { renderRtpTable(); updateRtpSummary(); }
+  if (activePanelId === modalBillId) {
+    // Update footer buttons for now-paid bill
+    document.getElementById('spQuickPayBtn').style.display = 'none';
+    document.getElementById('spMoreWrap').style.display = 'none';
+    renderSpDetails(b);
+  }
+}
+
+/* ── VIEW SWITCHING ── */
+var currentView = 'bills';
+function switchView(view) {
+  currentView = view;
+  var billsEl = document.getElementById('billsView');
+  var rtpEl = document.getElementById('rtpView');
+  var navBills = document.getElementById('navBills');
+  var navPayments = document.getElementById('navPayments');
+  var paymentsSubnav = document.getElementById('paymentsSubnav');
+  var pageTitle = document.getElementById('pageTitle');
+  var addBillBtn = document.getElementById('addBillBtn');
+  if (view === 'bills') {
+    billsEl.style.display = ''; rtpEl.style.display = 'none';
+    navBills.style.borderLeftColor = '#4ade80'; navBills.style.background = '#1e2e28'; navBills.style.color = '#e8f5ee';
+    navPayments.style.borderLeftColor = 'transparent'; navPayments.style.background = ''; navPayments.style.color = '#7a9a88';
+    paymentsSubnav.style.display = 'none';
+    pageTitle.textContent = 'Bills'; addBillBtn.style.display = 'flex';
+  } else {
+    billsEl.style.display = 'none'; rtpEl.style.display = 'flex'; rtpEl.style.flexDirection = 'column'; rtpEl.style.flex = '1'; rtpEl.style.overflow = 'hidden';
+    navBills.style.borderLeftColor = 'transparent'; navBills.style.background = ''; navBills.style.color = '#7a9a88';
+    navPayments.style.borderLeftColor = '#4ade80'; navPayments.style.background = '#1e2e28'; navPayments.style.color = '#e8f5ee';
+    paymentsSubnav.style.display = 'block';
+    pageTitle.textContent = 'Payments'; addBillBtn.style.display = 'none';
+    renderRtpTable(); updateRtpSummary();
+  }
+  closePanel();
+}
+
+/* ── RTP DATA & RENDERING ── */
+var rtpSelected = new Set();
+
+function getRtpBills() {
+  return billsData.filter(function(b){ return b.status === 'Ready to pay' || b.status === 'Partially Paid'; });
+}
+
+function updateRtpSummary() {
+  var bills = getRtpBills();
+  var totalBill = bills.reduce(function(s,b){ return s+b.amtRaw; }, 0);
+  var totalDue = bills.reduce(function(s,b){ return s+b.dueAmtRaw; }, 0);
+  document.getElementById('rtpTotalCount').textContent = bills.length;
+  document.getElementById('rtpTotalBillAmt').innerHTML = '&#8377;' + totalBill.toLocaleString('en-IN',{minimumFractionDigits:2});
+  document.getElementById('rtpTotalDueAmt').innerHTML = '&#8377;' + totalDue.toLocaleString('en-IN',{minimumFractionDigits:2});
+}
+
+function renderRtpTable() {
+  var bills = getRtpBills();
+  var html = '';
+  bills.forEach(function(b) {
+    var chk = rtpSelected.has(b.id) ? 'checked' : '';
+    var isActive = activePanelId === b.id ? 'rtp-active-row' : '';
+    html += '<tr class="'+isActive+'" onclick="openPanel('+b.id+')">';
+    html += '<td class="td-rtp-check" onclick="event.stopPropagation()"><input type="checkbox" style="width:13px;height:13px;accent-color:#1a2420;" '+chk+' onchange="rtpToggleRow('+b.id+',this)"></td>';
+    html += '<td><div class="vendor-cell"><div class="av-sm" style="background:'+b.bg+';color:'+b.fg+';">'+b.ini+'</div><span class="vendor-name">'+b.vendor+'</span>'+(b.msme?'<span class="msme-tag">MSME</span>':'')+'</div></td>';
+    html += '<td style="color:#555;">'+b.billId+(b.flags&&b.flags.length?'<span class="warn-icon"> &#9888;</span>':'')+'</td>';
+    html += '<td><div class="doc-ic"><svg width="12" height="12" fill="none" viewBox="0 0 12 12"><rect x="2" y="1" width="8" height="10" rx="1" stroke="#16a34a" stroke-width="1.1"/><path d="M4 4h4M4 6h4M4 8h2" stroke="#16a34a" stroke-width="1" stroke-linecap="round"/></svg></div></td>';
+    html += '<td style="text-align:right;color:#555;">'+b.amount+'</td>';
+    html += '<td style="text-align:right;font-weight:500;color:#1a1a1a;">'+b.dueAmt+'</td>';
+    html += '<td style="color:'+(b.red?'#dc2626':'#888')+';">'+b.dueDate+'</td>';
+    html += '<td><span style="color:#1a1a1a;text-decoration:underline;cursor:pointer;font-size:12px;">'+b.payBy+'</span></td>';
+    html += '<td>'+statusPill(b.status)+'</td>';
+    html += '<td onclick="event.stopPropagation()"><select class="priority-select" onclick="event.stopPropagation()"><option>Medium</option><option>High</option><option>Low</option></select></td>';
+    html += '<td onclick="event.stopPropagation()" class="rtp-actions-cell">';
+    html += '<div class="rtp-icon-btn" title="Pin" style="color:#2563eb;font-size:14px;">&#43;</div>';
+    html += '<div class="rtp-icon-btn" title="More" style="font-size:14px;" onclick="showToast(\'More actions\')">&#8942;</div>';
+    html += '<div class="rtp-icon-btn go" onclick="openPanel('+b.id+')"><svg width="10" height="10" fill="none" viewBox="0 0 10 10"><path d="M2 5h6M5 2l3 3-3 3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg></div>';
+    html += '</td></tr>';
+  });
+  document.getElementById('rtpTbody').innerHTML = html || '<tr><td colspan="11" style="padding:32px;text-align:center;color:#aaa;">All eligible bills have been paid.</td></tr>';
+}
+
+function rtpToggleRow(id, el) {
+  if (el.checked) rtpSelected.add(id); else rtpSelected.delete(id);
+  updateRtpBar();
+}
+function rtpToggleAll(el) {
+  var bills = getRtpBills();
+  if (el.checked) bills.forEach(function(b){ rtpSelected.add(b.id); });
+  else rtpSelected.clear();
+  updateRtpBar(); renderRtpTable();
+}
+function rtpClearSelection() { rtpSelected.clear(); updateRtpBar(); renderRtpTable(); }
+
+function updateRtpBar() {
+  var bar = document.getElementById('rtpBulkBar');
+  if (rtpSelected.size > 0) {
+    bar.classList.add('show');
+    var selBills = billsData.filter(function(b){ return rtpSelected.has(b.id); });
+    var totalBill = selBills.reduce(function(s,b){ return s+b.amtRaw; },0);
+    var totalDue = selBills.reduce(function(s,b){ return s+b.dueAmtRaw; },0);
+    document.getElementById('rtpBulkCount').textContent = rtpSelected.size;
+    document.getElementById('rtpBulkBillAmt').innerHTML = '&#8377; '+totalBill.toLocaleString('en-IN',{minimumFractionDigits:2});
+    document.getElementById('rtpBulkDueAmt').innerHTML = '&#8377; '+totalDue.toLocaleString('en-IN',{minimumFractionDigits:2});
+    document.getElementById('rtpQPCount').textContent = rtpSelected.size;
+    document.getElementById('rtpEPCount').textContent = rtpSelected.size;
+  } else {
+    bar.classList.remove('show');
+  }
+}
+
+function toggleRtpOptMenu(e) {
+  e.stopPropagation();
+  document.getElementById('rtpOptMenu').classList.toggle('open');
+}
+function closeRtpOptMenu() { document.getElementById('rtpOptMenu').classList.remove('open'); }
+
+function rtpOpenMarkAsPaid() {
+  // Use rtp selection if in rtp view, otherwise use bills selection
+  if (currentView === 'rtp' && rtpSelected.size > 0) {
+    var prev = new Set(selected);
+    selected = new Set(rtpSelected);
+    openBulkModal();
+    selected = prev;
+  } else { openBulkModal(); }
+}
+
+/* ── SINGLE BILL: open bmap with just this bill ── */
+function openModalFromPanel() {
+  if (!activePanelId) return;
+  var prevSelected = new Set(selected);
+  selected = new Set([activePanelId]);
+  openBulkModal();
+  selected = prevSelected;
+}
+var bmapRows = [];
+var bmapOptCols = { gst: false, cat: false, bu: false, cc: false, dept: false };
+var acctLabels = {
+  'hdfc1234':'HDFC Checking (****1234)',
+  'icici5678':'ICICI Savings (****5678)',
+  'sbi9012':'SBI Current (****9012)',
+  'card':'Corporate Credit Card',
+  'cash':'Cash / Petty Cash',
+  'upi':'UPI Transfer'
+};
+
+function toInputDate(d) {
+  if (!d) return '';
+  var parts = d.split('/');
+  if (parts.length === 3) return parts[2] + '-' + parts[1] + '-' + parts[0];
+  return '';
+}
+
+function openBulkModal() {
+  var eligible = billsData.filter(function(b){ return selected.has(b.id) && canMarkPaid(b); });
+  if (!eligible.length) { showToast('No eligible bills. Select Ready to pay or Partially Paid bills.'); return; }
+  bmapRows = eligible.map(function(b){
+    return {
+      id: b.id, vendor: b.vendor, ini: b.ini, bg: b.bg, fg: b.fg,
+      billId: b.billId, msme: b.msme,
+      billAmt: b.amount, billAmtRaw: b.amtRaw,
+      dueAmt: b.dueAmt, dueAmtRaw: b.dueAmtRaw,
+      amtPaid: b.dueAmtRaw,
+      gstAmtRaw: b.gstAmtRaw || Math.round(b.dueAmtRaw * 18 / 118),
+      gstHeld: false,
+      account: '', utr: '', date: toInputDate(b.payBy),
+      narration: b.narration,
+      cat: b.cat, dept: b.dept,
+      checked: true, flags: b.flags
+    };
+  });
+  document.getElementById('createEntryChk').checked = true;
+  renderBmapStats();
+  renderBmapRows();
+  document.getElementById('bmapOverlay').classList.add('open');
+}
+function closeBmapModal() {
+  document.getElementById('bmapOverlay').classList.remove('open');
+  closeAllPopovers();
+  closeInlineRows();
+}
+
+function renderBmapStats() {
+  var checkedRows = bmapRows.filter(function(r){ return r.checked; });
+  var vendors = new Set(checkedRows.map(function(r){ return r.vendor; }));
+  var totalBill = checkedRows.reduce(function(s,r){ return s + r.billAmtRaw; }, 0);
+  var totalDue = checkedRows.reduce(function(s,r){ return s + r.dueAmtRaw; }, 0);
+  document.getElementById('bmapStatBills').textContent = checkedRows.length;
+  document.getElementById('bmapStatVendors').textContent = vendors.size;
+  document.getElementById('bmapStatBillAmt').innerHTML = '&#8377;' + totalBill.toLocaleString('en-IN',{minimumFractionDigits:2});
+  document.getElementById('bmapStatDueAmt').innerHTML = '&#8377;' + totalDue.toLocaleString('en-IN',{minimumFractionDigits:2});
+  document.getElementById('bmapSelCount').textContent = checkedRows.length + ' / ' + bmapRows.length + ' selected';
+  document.getElementById('bmapConfirmCount').textContent = checkedRows.length;
+  var missing = checkedRows.filter(function(r){ return !r.account || !r.utr.trim(); }).length;
+  var warnEl = document.getElementById('bmapWarnMsg');
+  if (missing > 0) {
+    warnEl.innerHTML = '<svg width="13" height="13" fill="none" viewBox="0 0 13 13"><path d="M6.5 1.5L1 11.5h11L6.5 1.5z" stroke="#d97706" stroke-width="1.1" stroke-linejoin="round"/><path d="M6.5 5v3" stroke="#d97706" stroke-width="1.1" stroke-linecap="round"/><circle cx="6.5" cy="9.5" r="0.5" fill="#d97706"/></svg><span style="color:#888;">'+missing+' bill'+(missing>1?'s':'')+' missing account or UTR.</span>';
+    document.getElementById('bmapConfirmBtn').disabled = true;
+    document.querySelectorAll('.bmap-confirm-btn').forEach(function(btn){ btn.disabled = true; });
+  } else {
+    warnEl.innerHTML = '<svg width="13" height="13" fill="none" viewBox="0 0 13 13"><circle cx="6.5" cy="6.5" r="5.5" stroke="#16a34a" stroke-width="1.1"/><path d="M4 6.5l2 2 3-3" stroke="#16a34a" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"/></svg><span style="color:#16a34a;">All required fields filled. Ready to confirm.</span>';
+    document.querySelectorAll('.bmap-confirm-btn').forEach(function(btn){ btn.disabled = false; });
+  }
+}
+
+function renderBmapRows() {
+  var html = '';
+  bmapRows.forEach(function(r, idx) {
+    var missingAcct = !r.account;
+    var missingUtr = !r.utr.trim();
+    var rowErr = r.checked && (missingAcct || missingUtr) ? 'row-error' : '';
+    var customOptsHtml = customInstruments.map(function(inst){
+      return '<option value="'+inst.id+'"'+(r.account===inst.id?' selected':'')+'>'+inst.label+'</option>';
+    }).join('');
+    var acctOptHtml = '<option value="">Select account...</option>'
+      + '<optgroup label="Connected bank accounts">'
+      + '<option value="hdfc1234"'+(r.account==='hdfc1234'?' selected':'')+'>HDFC Checking (****1234)</option>'
+      + '<option value="icici5678"'+(r.account==='icici5678'?' selected':'')+'>ICICI Savings (****5678)</option>'
+      + '<option value="sbi9012"'+(r.account==='sbi9012'?' selected':'')+'>SBI Current (****9012)</option>'
+      + '</optgroup><optgroup label="Other">'
+      + '<option value="card"'+(r.account==='card'?' selected':'')+'>Corporate Credit Card</option>'
+      + '<option value="cash"'+(r.account==='cash'?' selected':'')+'>Cash / Petty Cash</option>'
+      + '<option value="upi"'+(r.account==='upi'?' selected':'')+'>UPI Transfer</option>'
+      + customOptsHtml
+      + '<option value="add_instrument">+ Add instrument</option>'
+      + '</optgroup>';
+    html += '<tr class="'+rowErr+'" id="bmap-row-'+idx+'">';
+    html += '<td class="td-check"><input type="checkbox" style="width:13px;height:13px;accent-color:#1a2420;" '+(r.checked?'checked':'')+' onchange="bmapToggleRow('+idx+',this)"></td>';
+    html += '<td><div style="display:flex;align-items:center;gap:7px;"><div style="width:22px;height:22px;border-radius:50%;background:'+r.bg+';color:'+r.fg+';font-size:9px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;">'+r.ini+'</div><span style="font-weight:500;color:#1a1a1a;">'+r.vendor+(r.msme?'<span style="background:#eff6ff;color:#1d4ed8;font-size:9px;font-weight:600;padding:1px 5px;border-radius:3px;border:1px solid #bfdbfe;margin-left:5px;">MSME</span>':'')+'</span></div></td>';
+    html += '<td style="color:#555;">'+r.billId+'</td>';
+    html += '<td style="text-align:right;color:#555;">'+r.billAmt+'</td>';
+    html += '<td style="text-align:right;font-weight:500;color:#1a1a1a;">'+r.dueAmt+'</td>';
+    html += '<td style="text-align:right;"><input class="bmap-input" style="width:105px;text-align:right;" value="&#8377;'+r.amtPaid.toLocaleString('en-IN',{minimumFractionDigits:2,maximumFractionDigits:2})+'" onchange="bmapUpdateAmt('+idx+',this.value)" onblur="renderBmapStats()"></td>';
+    html += '<td><select class="bmap-select'+(missingAcct&&r.checked?' warn':'')+'" style="width:170px;" onchange="bmapUpdate('+idx+',\'account\',this.value)">'+acctOptHtml+'</select></td>';
+    html += '<td><input class="bmap-input'+(missingUtr&&r.checked?' warn':'')+'" style="width:130px;" placeholder="Enter UTR" value="'+r.utr+'" onchange="bmapUpdate('+idx+',\'utr\',this.value)"></td>';
+    html += '<td><input type="date" class="bmap-input" style="width:130px;" value="'+r.date+'" onchange="bmapUpdate('+idx+',\'date\',this.value)"></td>';
+    html += '<td><input class="bmap-input" style="width:180px;" value="'+r.narration+'" onchange="bmapUpdate('+idx+',\'narration\',this.value)"></td>';
+    html += '<td class="col-opt col-gst" style="text-align:right;color:#555;'+(bmapOptCols.gst?'':'display:none;')+'">&#8377;'+r.gstAmtRaw.toLocaleString('en-IN',{minimumFractionDigits:2,maximumFractionDigits:2})+'</td>';
+    html += '<td class="col-opt col-cat" style="color:#555;'+(bmapOptCols.cat?'':'display:none;')+'">'+r.cat+'</td>';
+    html += '<td class="col-opt col-bu" style="color:#888;'+(bmapOptCols.bu?'':'display:none;')+'">&#8212;</td>';
+    html += '<td class="col-opt col-cc" style="color:#888;'+(bmapOptCols.cc?'':'display:none;')+'">&#8212;</td>';
+    html += '<td class="col-opt col-dept" style="color:#555;'+(bmapOptCols.dept?'':'display:none;')+'">'+r.dept+'</td>';
+    html += '<td style="text-align:center;"><span style="color:#ccc;font-size:16px;cursor:pointer;">&#183;&#183;&#183;</span></td>';
+    html += '</tr>';
+  });
+  document.getElementById('bmapTbody').innerHTML = html;
+}
+
+function bmapUpdateAmt(idx, val) {
+  var parsed = parseAmt(val);
+  bmapRows[idx].amtPaid = parsed > 0 ? parsed : bmapRows[idx].dueAmtRaw;
+  bmapRows[idx].gstHeld = false;
+  renderBmapStats();
+}
+
+function holdGst() {
+  var toggling = bmapRows.some(function(r){ return r.checked && !r.gstHeld; });
+  var changed = 0;
+  bmapRows.forEach(function(r){
+    if (!r.checked) return;
+    if (toggling && !r.gstHeld) {
+      r.amtPaid = Math.max(0, r.amtPaid - r.gstAmtRaw);
+      r.gstHeld = true; changed++;
+    } else if (!toggling && r.gstHeld) {
+      r.amtPaid = Math.min(r.dueAmtRaw, r.amtPaid + r.gstAmtRaw);
+      r.gstHeld = false; changed++;
+    }
+  });
+  if (!changed) showToast('No eligible rows to update');
+  renderBmapRows(); renderBmapStats();
+}
+
+function bmapUpdate(idx, field, val) {
+  if (field === 'account' && val === 'add_instrument') {
+    bmapRows[idx].account = '';
+    openInstPanel(idx);
+    return;
+  }
+  bmapRows[idx][field] = val;
+  renderBmapStats();
+  var row = document.getElementById('bmap-row-'+idx);
+  if (!row) return;
+  var r = bmapRows[idx];
+  var missingAcct = !r.account;
+  var missingUtr = !r.utr.trim();
+  if (r.checked && (missingAcct || missingUtr)) row.classList.add('row-error');
+  else row.classList.remove('row-error');
+  var selects = row.querySelectorAll('select.bmap-select');
+  if (selects.length) { if (missingAcct && r.checked) selects[0].classList.add('warn'); else selects[0].classList.remove('warn'); }
+  var inputs = row.querySelectorAll('input.bmap-input');
+  inputs.forEach(function(inp){ if (inp.placeholder && inp.placeholder.includes('UTR')) { if (missingUtr && r.checked) inp.classList.add('warn'); else inp.classList.remove('warn'); } });
+}
+
+function bmapToggleRow(idx, el) {
+  bmapRows[idx].checked = el.checked;
+  renderBmapStats();
+  var row = document.getElementById('bmap-row-'+idx);
+  var r = bmapRows[idx];
+  if (r.checked && (!r.account || !r.utr.trim())) row.classList.add('row-error');
+  else row.classList.remove('row-error');
+}
+function bmapToggleAll(el) {
+  bmapRows.forEach(function(r){ r.checked = el.checked; });
+  renderBmapStats(); renderBmapRows();
+}
+function resetBmapRows() {
+  bmapRows.forEach(function(r){ r.account = ''; r.utr = ''; });
+  renderBmapRows(); renderBmapStats();
+}
+
+/* column toggling */
+function toggleColPicker(e) {
+  e.stopPropagation();
+  document.getElementById('colPicker').classList.toggle('open');
+}
+function toggleCol(col, show) {
+  bmapOptCols[col] = show;
+  document.querySelectorAll('.col-'+col).forEach(function(el){ el.style.display = show ? '' : 'none'; });
+}
+
+/* bulk set popovers */
+/* ── ADD INSTRUMENT ── */
+var customInstruments = [];
+var instTargetIdx = null;
+var currentInstTab = 'bank';
+
+function openInstPanel(idx) {
+  instTargetIdx = idx;
+  currentInstTab = 'bank';
+  switchInstTab('bank');
+  document.getElementById('instAcctDigits').value = '';
+  document.getElementById('instIfsc').value = '';
+  document.getElementById('instBankNickname').value = '';
+  document.getElementById('instCardDigits').value = '';
+  document.getElementById('instBankCode').value = '';
+  document.getElementById('instCardNickname').value = '';
+  document.getElementById('instOtherLabel').value = '';
+  document.getElementById('instOverlay').classList.add('open');
+}
+function closeInstPanel() {
+  document.getElementById('instOverlay').classList.remove('open');
+  instTargetIdx = null;
+}
+function switchInstTab(tab) {
+  currentInstTab = tab;
+  ['bank','card','other'].forEach(function(t){
+    document.getElementById('instTab_'+t).classList.toggle('active', t===tab);
+    document.getElementById('instForm_'+t).classList.toggle('active', t===tab);
+  });
+}
+function updateBankNickname() {
+  var digits = document.getElementById('instAcctDigits').value.trim();
+  var ifsc = document.getElementById('instIfsc').value.trim().toUpperCase();
+  var nick = document.getElementById('instBankNickname');
+  if (digits.length === 4 && ifsc.length >= 4) {
+    nick.value = ifsc.slice(0,4) + ' A/C xx' + digits;
+  }
+}
+function updateCardNickname() {
+  var digits = document.getElementById('instCardDigits').value.trim();
+  var code = document.getElementById('instBankCode').value.trim().toUpperCase();
+  var nick = document.getElementById('instCardNickname');
+  if (digits.length === 4 && code.length >= 2) {
+    nick.value = code + ' xx' + digits;
+  }
+}
+function createInstrument() {
+  var label = '';
+  if (currentInstTab === 'bank') {
+    var digits = document.getElementById('instAcctDigits').value.trim();
+    var ifsc = document.getElementById('instIfsc').value.trim().toUpperCase();
+    if (!digits || !ifsc) { showToast('Last 4 digits and IFSC code are required'); return; }
+    label = document.getElementById('instBankNickname').value.trim() || (ifsc.slice(0,4) + ' A/C xx' + digits);
+  } else if (currentInstTab === 'card') {
+    var cardDigits = document.getElementById('instCardDigits').value.trim();
+    var bankCode = document.getElementById('instBankCode').value.trim().toUpperCase();
+    if (!cardDigits || !bankCode) { showToast('Last 4 digits and bank code are required'); return; }
+    label = document.getElementById('instCardNickname').value.trim() || (bankCode + ' xx' + cardDigits);
+  } else {
+    label = document.getElementById('instOtherLabel').value.trim();
+    if (!label) { showToast('Please enter a label'); return; }
+  }
+  var id = 'inst_' + Date.now();
+  customInstruments.push({ id: id, label: label });
+  acctLabels[id] = label;
+  // Add to bulk select
+  var grp = document.getElementById('bulkAcctOtherGroup');
+  if (grp) {
+    var addOpt = grp.querySelector('option[value="add_instrument"]');
+    var newOpt = document.createElement('option');
+    newOpt.value = id; newOpt.textContent = label;
+    grp.insertBefore(newOpt, addOpt);
+  }
+  if (instTargetIdx === -1) {
+    // bulk context: pre-select in bulk dropdown
+    var bulkSel = document.getElementById('bulkAcctVal');
+    if (bulkSel) bulkSel.value = id;
+  } else if (instTargetIdx !== null) {
+    bmapRows[instTargetIdx].account = id;
+  }
+  closeInstPanel();
+  renderBmapRows(); renderBmapStats();
+  showToast('Instrument created: ' + label);
+}
+
+function toggleInlineRow(id, e) {
+  if (e) e.stopPropagation();
+  var row = document.getElementById(id);
+  var isOpen = row.classList.contains('open');
+  closeInlineRows();
+  if (!isOpen) row.classList.add('open');
+}
+function closeInlineRows() {
+  document.getElementById('bulkAcctRow').classList.remove('open');
+  document.getElementById('bulkDateRow').classList.remove('open');
+}
+function applyBulkAccount() {
+  var val = document.getElementById('bulkAcctVal').value;
+  if (!val) { showToast('Please select an account'); return; }
+  if (val === 'add_instrument') {
+    document.getElementById('bulkAcctVal').value = '';
+    openInstPanel(-1);
+    return;
+  }
+  bmapRows.forEach(function(r){ if (r.checked) r.account = val; });
+  closeInlineRows();
+  renderBmapRows(); renderBmapStats();
+}
+function applyBulkDate() {
+  var val = document.getElementById('bulkDateVal').value;
+  if (!val) { showToast('Please select a date'); return; }
+  bmapRows.forEach(function(r){ if (r.checked) r.date = val; });
+  closeInlineRows();
+  renderBmapRows(); renderBmapStats();
+}
+function closeAllPopovers() {
+  closeInlineRows();
+  document.getElementById('colPicker').classList.remove('open');
+}
+
+/* confirm */
+function parseAmt(str) {
+  return parseFloat(String(str).replace(/[₹,\s]/g, '')) || 0;
+}
+
+function confirmBmap() {
+  var checkedRows = bmapRows.filter(function(r){ return r.checked; });
+  var missing = checkedRows.filter(function(r){ return !r.account || !r.utr.trim(); }).length;
+  if (missing) { showToast(missing + ' bill'+(missing>1?'s':'')+' missing account or UTR'); return; }
+  var payId = 'PAY-2026-' + Math.floor(Math.random()*9000+1000);
+  var createEntry = document.getElementById('createEntryChk').checked;
+  var fullyPaid = 0, partiallyPaid = 0;
+  checkedRows.forEach(function(r){
+    var b = billsData.find(function(x){ return x.id===r.id; });
+    if (!b) return;
+    var amtPaid = parseAmt(r.amtPaid);
+    var isFullPayment = amtPaid >= b.dueAmtRaw;
+    if (isFullPayment) {
+      b.status = 'Paid'; b.erpStatus = 'Synced to ERP';
+      b.dueAmtRaw = 0; b.dueAmt = '&#8377;0.00';
+      fullyPaid++;
+    } else {
+      b.status = 'Partially Paid';
+      b.dueAmtRaw = Math.max(0, b.dueAmtRaw - amtPaid);
+      b.dueAmt = '&#8377;' + b.dueAmtRaw.toLocaleString('en-IN',{minimumFractionDigits:2,maximumFractionDigits:2});
+      partiallyPaid++;
+    }
+    b._paymentRecord = { payId: payId, account: acctLabels[r.account]||r.account, utr: r.utr, amtPaid: amtPaid, partial: !isFullPayment };
+  });
+  closeBmapModal();
+  var summaryParts = [];
+  if (fullyPaid) summaryParts.push(fullyPaid + ' fully paid');
+  if (partiallyPaid) summaryParts.push(partiallyPaid + ' partially paid — remaining on RTP');
+  document.getElementById('successTitle').textContent = checkedRows.length + (checkedRows.length===1?' bill':' bills') + ' processed';
+  document.getElementById('successSub').textContent = summaryParts.join(', ') + '. Payment records and accounting entries created.';
+  document.getElementById('successMeta').innerHTML =
+    '<div class="smr"><span class="smk">Payment ID</span><span class="smv" style="font-family:monospace;">'+payId+'</span></div>' +
+    (fullyPaid ? '<div class="smr"><span class="smk">Fully paid</span><span class="smv" style="color:#16a34a;">&#10003; '+fullyPaid+' bill'+(fullyPaid>1?'s':'')+'</span></div>' : '') +
+    (partiallyPaid ? '<div class="smr"><span class="smk">Partially paid</span><span class="smv" style="color:#f59e0b;">&#9888; '+partiallyPaid+' bill'+(partiallyPaid>1?'s remain':' remains')+' in RTP</span></div>' : '') +
+    '<div class="smr"><span class="smk">Accounting entry</span><span class="smv" style="color:'+(createEntry?'#16a34a':'#888')+'">'+(createEntry?'&#10003; Created':'&#8212; Skipped (manually disabled)')+'</span></div>';
+  document.getElementById('successModal').classList.add('open');
+  selected.clear(); rtpSelected.clear(); updateBulkBar(); updateRtpBar(); renderTable();
+  if (currentView === 'rtp') { renderRtpTable(); updateRtpSummary(); }
+}
+
+/* keep old single-bill functions intact */
+function closeBulkModal() { closeBmapModal(); }
+function confirmBulk() { confirmBmap(); }
+
+function closeSuccess() { document.getElementById('successModal').classList.remove('open'); }
+
+function toggleMoreMenu(e) {
+  e.stopPropagation();
+  var menu = document.getElementById('spMoreMenu');
+  menu.classList.toggle('open');
+}
+function closeMoreMenu() {
+  document.getElementById('spMoreMenu').classList.remove('open');
+}
+function toggleAuditView(id) {
+  var b = billsData.find(function(x){ return x.id===id; });
+  b._showAllAudits = !b._showAllAudits;
+  renderSpDetails(b);
+}
+
+var _tt;
+function showToast(msg) {
+  var t = document.getElementById('toast');
+  t.innerHTML = '<svg width="14" height="14" fill="none" viewBox="0 0 14 14"><circle cx="7" cy="7" r="6" stroke="#f59e0b" stroke-width="1.2"/><path d="M7 5v3" stroke="#f59e0b" stroke-width="1.2" stroke-linecap="round"/><circle cx="7" cy="9.5" r="0.5" fill="#f59e0b"/></svg>' + msg;
+  t.classList.add('show'); clearTimeout(_tt); _tt = setTimeout(function(){ t.classList.remove('show'); }, 3000);
+}
+
+document.getElementById('mapModal').addEventListener('click', function(e){ if(e.target===this) closeMapModal(); });
+document.getElementById('bmapOverlay').addEventListener('click', function(e){ if(e.target===this) closeBmapModal(); });
+document.getElementById('successModal').addEventListener('click', function(e){ if(e.target===this) closeSuccess(); });
+document.addEventListener('click', function(){ closeMoreMenu(); closeAllPopovers(); closeRtpOptMenu(); });
+document.getElementById('instOverlay').addEventListener('click', function(e){ if(e.target===this) closeInstPanel(); });
+document.addEventListener('keydown', function(e){ if(e.key==='Escape'){ closeMapModal(); closeBmapModal(); closeSuccess(); closePanel(); closeMoreMenu(); closeAllPopovers(); closeRtpOptMenu(); closeInstPanel(); } });
+
+renderTable();
+switchView('rtp');
+
+</script>
+</body>
+</html>
