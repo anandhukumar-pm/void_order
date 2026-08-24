@@ -244,7 +244,7 @@
   .mysa-toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
 
   /* ============ RECORD EXTERNAL PAYMENT ============ */
-  .rep-screen{display:flex;flex-direction:column;max-height:100vh;}
+  .rep-screen{display:flex;flex-direction:column;height:100vh;overflow:hidden;}
   .rep-scroll-area{flex:1 1 auto;min-height:0;overflow-y:auto;padding:20px 40px 28px;}
   .rep-sticky-footer{flex-shrink:0;display:flex;justify-content:flex-end;gap:10px;border-top:1px solid var(--divider-default);padding:14px 40px;background:#fff;}
   .rep-body{display:grid;grid-template-columns:3fr 2fr;gap:36px;align-items:start;}
@@ -1748,7 +1748,7 @@ function openRecordExternalPayment(){
   document.getElementById('step1').style.display = 'none';
   document.getElementById('step2').style.display = 'none';
   document.getElementById('screen-rep-detail').style.display = 'none';
-  document.getElementById('screen-rep').style.display = 'block';
+  document.getElementById('screen-rep').style.display = 'flex';
 
   // reset form
   document.getElementById('rep-amount').value = '';
@@ -1928,7 +1928,7 @@ function finalizeRepPayment(){
   document.getElementById('rd-timeline').innerHTML = timeline.join('');
 
   document.getElementById('screen-rep').style.display = 'none';
-  document.getElementById('screen-rep-detail').style.display = 'block';
+  document.getElementById('screen-rep-detail').style.display = 'flex';
   showToast(`${inr(amount)} recorded as paid to ${beneficiary}.`);
 }
 
